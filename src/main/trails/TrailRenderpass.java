@@ -3,11 +3,9 @@ package trails;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jkanvas.KanvasContext;
@@ -20,15 +18,21 @@ public class TrailRenderpass extends RenderpassAdapter {
 
   private final BufferedImage img;
 
+  private final Animator animator;
+
   private final Animated animated;
+
+  private final ParticleList<Particle> particles;
 
   protected AtomicInteger ready;
 
   protected volatile boolean running;
 
   public TrailRenderpass(final Animator animator, final int width, final int height) {
+    this.animator = Objects.requireNonNull(animator);
     img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     ready = new AtomicInteger();
+    particles = new ParticleList<>();
     final Graphics2D g = getGraphics();
     g.setColor(Color.BLACK);
     g.fillRect(0, 0, width, height);
@@ -46,6 +50,15 @@ public class TrailRenderpass extends RenderpassAdapter {
     };
     animator.getAnimationList().addAnimated(animated);
     running = true;
+  }
+
+  public void add(final Particle p) {
+    animator.getAnimationList().addAnimated(p);
+    particles.add(p);
+  }
+
+  public void remove(final Particle p) {
+    particles.remove(p);
   }
 
   protected void step() {
@@ -72,17 +85,11 @@ public class TrailRenderpass extends RenderpassAdapter {
 
   protected void stepImage() {
     final Graphics2D g = getGraphics();
-    fade(g, 0.8);
-    final Random r = ThreadLocalRandom.current();
-    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.9f));
+    fade(g, 0.95);
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.97f));
     g.setColor(new Color(0.1f, 0.1f, 1f));
-    final double w = getWidth();
-    final double h = getHeight();
-    for(int i = 0; i < 1000; ++i) {
-      final Point2D pos = new Point2D.Double(
-          (w + r.nextGaussian() * w * 0.125) * 0.5,
-          (h + r.nextGaussian() * h * 0.125) * 0.5);
-      g.fill(PaintUtil.createCircle(pos.getX(), pos.getY(), 5));
+    for(final Particle p : particles) {
+      g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));
     }
     g.dispose();
   }
