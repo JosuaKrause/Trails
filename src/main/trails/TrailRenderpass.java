@@ -6,9 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,7 +15,7 @@ import jkanvas.animation.Animator;
 import jkanvas.painter.RenderpassAdapter;
 import jkanvas.util.PaintUtil;
 
-public class ImageRenderpass extends RenderpassAdapter {
+public class TrailRenderpass extends RenderpassAdapter {
 
   private final BufferedImage a;
 
@@ -30,7 +27,7 @@ public class ImageRenderpass extends RenderpassAdapter {
 
   protected volatile boolean running;
 
-  public ImageRenderpass(final Animator animator, final int width, final int height) {
+  public TrailRenderpass(final Animator animator, final int width, final int height) {
     a = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     b = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     activeA = true;
@@ -61,21 +58,21 @@ public class ImageRenderpass extends RenderpassAdapter {
     return running;
   }
 
-  private void copy(final BufferedImage from, final BufferedImage to,
-      final BufferedImageOp op) {
+  private void copy(final BufferedImage from, final BufferedImage to, final double alpha) {
     final Graphics2D g = (Graphics2D) to.getGraphics();
     g.setColor(Color.BLACK);
     g.fillRect(0, 0, to.getWidth(), to.getHeight());
-    g.drawImage(from, op, 0, 0);
+    PaintUtil.setAlpha(g, alpha);
+    g.drawImage(from, 0, 0, null);
     g.dispose();
   }
 
-  private void flipImages(final BufferedImageOp op) {
+  private void flipImages(final double alpha) {
     activeA = !activeA;
     if(activeA) {
-      copy(b, a, op);
+      copy(b, a, alpha);
     } else {
-      copy(a, b, op);
+      copy(a, b, alpha);
     }
   }
 
@@ -88,7 +85,7 @@ public class ImageRenderpass extends RenderpassAdapter {
   }
 
   protected void step() {
-    flipImages(new ConvolveOp(new Kernel(1, 1, new float[] { 0.8f})));
+    flipImages(0.8);
     final Random r = ThreadLocalRandom.current();
     final BufferedImage img = getImage();
     final Graphics2D g = getGraphics();
@@ -96,7 +93,7 @@ public class ImageRenderpass extends RenderpassAdapter {
     g.setColor(new Color(0.1f, 0.1f, 1f));
     final double w = img.getWidth();
     final double h = img.getHeight();
-    for(int i = 0; i < 500; ++i) {
+    for(int i = 0; i < 1000; ++i) {
       final Point2D pos = new Point2D.Double(
           (w + r.nextGaussian() * w * 0.125) * 0.5,
           (h + r.nextGaussian() * h * 0.125) * 0.5);
