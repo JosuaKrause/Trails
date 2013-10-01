@@ -1,5 +1,6 @@
 package trails;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -91,14 +92,14 @@ public class ImageRenderpass extends RenderpassAdapter {
     final Random r = ThreadLocalRandom.current();
     final BufferedImage img = getImage();
     final Graphics2D g = getGraphics();
-    PaintUtil.setAlpha(g, 0.8);
-    g.setColor(new Color(0.2f, 0.2f, 1f));
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.9f));
+    g.setColor(new Color(0.1f, 0.1f, 1f));
     final double w = img.getWidth();
     final double h = img.getHeight();
     for(int i = 0; i < 500; ++i) {
       final Point2D pos = new Point2D.Double(
-          (w + r.nextGaussian() * w * 0.0125) * 0.5,
-          (h + r.nextGaussian() * h * 0.0125) * 0.5);
+          (w + r.nextGaussian() * w * 0.125) * 0.5,
+          (h + r.nextGaussian() * h * 0.125) * 0.5);
       g.fill(PaintUtil.createCircle(pos.getX(), pos.getY(), 5));
     }
     g.dispose();
