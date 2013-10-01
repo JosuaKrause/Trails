@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.Animated;
@@ -17,21 +18,18 @@ import jkanvas.util.PaintUtil;
 
 public class TrailRenderpass extends RenderpassAdapter {
 
-  private final BufferedImage a;
-
-  private final BufferedImage b;
+  private final BufferedImage img;
 
   private final Animated animated;
 
-  private boolean activeA;
+  protected AtomicInteger ready;
 
   protected volatile boolean running;
 
   public TrailRenderpass(final Animator animator, final int width, final int height) {
-    a = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    b = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    activeA = true;
-    final Graphics2D g = (Graphics2D) a.getGraphics();
+    img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    ready = new AtomicInteger();
+    final Graphics2D g = getGraphics();
     g.setColor(Color.BLACK);
     g.fillRect(0, 0, width, height);
     g.dispose();
@@ -50,6 +48,10 @@ public class TrailRenderpass extends RenderpassAdapter {
     running = true;
   }
 
+  protected void step() {
+    ready.incrementAndGet();
+  }
+
   public void setRunning(final boolean running) {
     this.running = running;
   }
@@ -58,41 +60,24 @@ public class TrailRenderpass extends RenderpassAdapter {
     return running;
   }
 
-  private void copy(final BufferedImage from, final BufferedImage to, final double alpha) {
-    final Graphics2D g = (Graphics2D) to.getGraphics();
+  private void fade(final Graphics2D g, final double alpha) {
     g.setColor(Color.BLACK);
-    g.fillRect(0, 0, to.getWidth(), to.getHeight());
-    PaintUtil.setAlpha(g, alpha);
-    g.drawImage(from, 0, 0, null);
-    g.dispose();
-  }
-
-  private void flipImages(final double alpha) {
-    activeA = !activeA;
-    if(activeA) {
-      copy(b, a, alpha);
-    } else {
-      copy(a, b, alpha);
-    }
+    PaintUtil.setAlpha(g, 1.0 - alpha);
+    g.fillRect(0, 0, getWidth(), getHeight());
   }
 
   protected Graphics2D getGraphics() {
-    return (Graphics2D) (activeA ? a.getGraphics() : b.getGraphics());
+    return (Graphics2D) img.getGraphics();
   }
 
-  protected BufferedImage getImage() {
-    return activeA ? a : b;
-  }
-
-  protected void step() {
-    flipImages(0.8);
-    final Random r = ThreadLocalRandom.current();
-    final BufferedImage img = getImage();
+  protected void stepImage() {
     final Graphics2D g = getGraphics();
+    fade(g, 0.8);
+    final Random r = ThreadLocalRandom.current();
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.9f));
     g.setColor(new Color(0.1f, 0.1f, 1f));
-    final double w = img.getWidth();
-    final double h = img.getHeight();
+    final double w = getWidth();
+    final double h = getHeight();
     for(int i = 0; i < 1000; ++i) {
       final Point2D pos = new Point2D.Double(
           (w + r.nextGaussian() * w * 0.125) * 0.5,
@@ -104,13 +89,27 @@ public class TrailRenderpass extends RenderpassAdapter {
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
-    g.drawImage(getImage(), 0, 0, null);
+    final int r = ready.getAndSet(0);
+    if(r > 0) {
+      if(r > 1) {
+        System.err.println(getClass().getName() + " skipped " + (r - 1) + " frames");
+      }
+      stepImage();
+    }
+    g.drawImage(img, 0, 0, null);
   }
 
   @Override
   public Rectangle2D getBoundingBox() {
-    final BufferedImage img = getImage();
-    return new Rectangle2D.Double(0, 0, img.getWidth(), img.getHeight());
+    return new Rectangle2D.Double(0, 0, getWidth(), getHeight());
+  }
+
+  public int getWidth() {
+    return img.getWidth();
+  }
+
+  public int getHeight() {
+    return img.getHeight();
   }
 
 }
