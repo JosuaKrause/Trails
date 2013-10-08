@@ -11,10 +11,39 @@
 
 \begin{document}
 \section*{Related Work}
-Visualizing origin destination data is a common task
-and multiple approaches have been used.
+Visualizing origin-destination data with temporal features
+is a common task and multiple approaches have been used.
 
-TODO
+Guo~et~al.~\cite{Guo2006} use an origin-destination matrix
+to show companies relocating within the US.
+Rows and columns can be reordered to identify clusters
+and patterns, and therefore provide no spatial context.
+Also, the resolution of origins and destinations is limited
+to states due to the use of a matrix.
+In order to address those spatial problems
+Wood~et~al.~\cite{Wood2002} explore nested matrices
+that are laid over a geographic map.
+Every cell of the matrix aggregates the origins
+of the geographic map and contains
+a second matrix showing aggregated destinations of
+a smaller scale version of the map.
+Becker~et~al.~\cite{Becker1995} compare
+origin-destination matrices to node-link representations
+and propose a dynamic node-link representation
+where the user can define time intervals to aggregate the data,
+set thresholds to limit the number of visible links,
+and choose the regions that are displayed.
+
+Using a node-link representation for showing origin-destination
+data introduces clutter for large data-sets.
+Holten and van Wijk~\cite{Holten2009} use edge bundling
+to overcome clutter. However, this may imply hierarchical
+relations of flows which do not exist.
+
+Rae~\cite{Rae2009} use flow density based heat-maps
+
+
+
 
 \bibliographystyle{splncs}
 \bibliography{trails}
