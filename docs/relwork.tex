@@ -14,13 +14,24 @@
 Visualizing origin-destination data with temporal features
 is a common task and multiple approaches have been used.
 
+Rae~\cite{Rae2009} use heat-maps based on
+the density of migration flow of cities in the UK.
+The user can also select a city to see its flow as node-links.
+By computing density based clusters to define regions
+Guo~et~al.~\cite{Guo2012} use choropleth maps to show
+the net-flow of taxis in Hong Kong.
+A kernel density representation shows the distribution
+of destinations.
+The same technique is used by Ferreira~et~al.~\cite{Ferreira2013}
+for both destinations and origins.
+
 Guo~et~al.~\cite{Guo2006} use an origin-destination matrix
 to show companies relocating within the US.
 Rows and columns can be reordered to identify clusters
-and patterns, and therefore provide no spatial context.
+and patterns, but provide no spatial context.
 Also, the resolution of origins and destinations is limited
 to states due to the use of a matrix.
-In order to address those spatial problems
+In order to address the spatial problems
 Wood~et~al.~\cite{Wood2002} explore nested matrices
 that are laid over a geographic map.
 Every cell of the matrix aggregates the origins
@@ -33,34 +44,25 @@ and propose an animated dynamic node-link representation
 where the user can define time intervals to aggregate the data,
 set thresholds to limit the number of visible links,
 and choose the regions that are displayed.
-Tversky~et~al.~\cite{Tversky2002} states that
-keeping track of changes is difficult when using
-animation. However, animation can be used to
+Using animation can make keeping track of changes
+difficult Tversky~et~al.~\cite{Tversky2002}.
+However, animation can be used to
 identify trends (Heer and Robertson~\cite{Heer2007},
 and Robertson~et~al.~\cite{Robertson}) and
 patterns (Griffin and MacEachren\cite{Griffin2006}).
 Boyandin~et~al.~\cite{Boyandin2012} show that animated
-node-link representations make spatial and short temporal
-patterns easier to detect than a small multiples representation.
+node-link representations of flows make spatial and short temporal
+patterns easier to detect than in
+a similar small multiples representation.
 
 Using a node-link representation for showing origin-destination
 data introduces clutter for large data-sets.
-Holten and van Wijk~\cite{Holten2009} use edge bundling to overcome clutter.
+Holten and van Wijk~\cite{Holten2009} use edge bundling to overcome this.
 Boyandin~et~al.~\cite{Boyandin2008} also use edge bundling
 in addition to colors to identify sources and sinks of migration
 flows, and time-tables for temporal navigation.
 However, edge bundling may imply hierarchical
 relations of flows which do not exist.
-Rae~\cite{Rae2009} use heat-maps based on
-the density of migration flow of cities in the UK.
-The user can also select a city to see its flow as node-links.
-By computing density based clusters to define regions
-Guo~et~al.~\cite{Guo2012} use choropleth maps to show
-the net-flow of taxis in Hong Kong.
-A kernel density representation shows the distribution
-of destinations.
-The same technique is used by Ferreira~et~al.~\cite{Ferreira2013}
-for both destinations and origins.
 
 Boyandin~et~al.~\cite{Boyandin2011} displays origins and
 destinations of migration flows on separate maps connected
