@@ -6,26 +6,45 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+/**
+ * A list that is optimized for adding and removing many objects.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The object type.
+ */
 public class ParticleList<T> implements Iterable<T> {
 
+  /** The backing list. */
   private Object[] list;
-
+  /** Lowest index of a free cell. */
   private int lowestFree = 0;
-
+  /** The active length. Ie the highest index minus one. */
   private int length = 0;
-
+  /** The number of elements in the list. */
   private int count = 0;
-
+  /** The number of modifications. */
   private volatile int modCount = 0;
 
+  /** Creates a list with initial capacity of 100. */
   public ParticleList() {
     this(100);
   }
 
+  /**
+   * Creates a list.
+   * 
+   * @param initialSize The initial capacity.
+   */
   public ParticleList(final int initialSize) {
     list = new Object[initialSize];
   }
 
+  /**
+   * Enlarges the array if the actual length of the array is smaller than the
+   * given size.
+   * 
+   * @param size The wanted size.
+   */
   private void ensureSize(final int size) {
     if(size < list.length) return;
     final Object[] newList = new Object[size * 2 + 1];
@@ -33,6 +52,7 @@ public class ParticleList<T> implements Iterable<T> {
     list = newList;
   }
 
+  /** Shrinks the array if there are too few elements in the list. */
   private void shrinkMaybe() {
     if(length >= list.length / 3) return;
     final Object[] newList = new Object[length * 2 + 1];
@@ -40,6 +60,7 @@ public class ParticleList<T> implements Iterable<T> {
     list = newList;
   }
 
+  /** Removes gaps in the array. */
   private void compact() {
     if(count >= length / 3) {
       shrinkMaybe();
@@ -60,10 +81,20 @@ public class ParticleList<T> implements Iterable<T> {
     Arrays.fill(list, lowestFree, list.length, null);
   }
 
+  /**
+   * Expects the given modification count or fails otherwise.
+   * 
+   * @param expectedModCount The expected modification count.
+   */
   protected void expectModCount(final int expectedModCount) {
     if(modCount != expectedModCount) throw new ConcurrentModificationException();
   }
 
+  /**
+   * Adds an element to the list.
+   * 
+   * @param t The element to add.
+   */
   public void add(final T t) {
     final int expectedModCount = ++modCount;
     ensureSize(lowestFree);
@@ -78,6 +109,11 @@ public class ParticleList<T> implements Iterable<T> {
     expectModCount(expectedModCount);
   }
 
+  /**
+   * Removes an element from the list.
+   * 
+   * @param t The element to be removed.
+   */
   public void remove(final T t) {
     final int expectedModCount = ++modCount;
     for(int i = 0; i < length; ++i) {
@@ -146,10 +182,20 @@ public class ParticleList<T> implements Iterable<T> {
     };
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether the list is empty.
+   */
   public boolean isEmpty() {
     return count == 0;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The number of elements in the list.
+   */
   public int size() {
     return count;
   }

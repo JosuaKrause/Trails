@@ -7,17 +7,36 @@ import java.awt.geom.Point2D;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.GenericAnimated;
 
+/**
+ * A particle.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class Particle extends AnimatedPosition {
 
+  /** The curve bend ratio. */
   public static double bendRatio = 0.4;
 
+  /** The particle size. */
   private final double size;
 
+  /**
+   * Creates a particle at the given position.
+   * 
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param size The size.
+   */
   public Particle(final double x, final double y, final double size) {
     super(x, y);
     this.size = size;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The size of the particle.
+   */
   public double getSize() {
     return size;
   }

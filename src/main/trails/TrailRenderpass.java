@@ -14,20 +14,38 @@ import jkanvas.animation.Animator;
 import jkanvas.painter.RenderpassAdapter;
 import jkanvas.util.PaintUtil;
 
+/**
+ * Renders trails.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class TrailRenderpass extends RenderpassAdapter {
 
+  /** The strength of the particles. */
+  public static float particleStrength = 0.97f;
+  /** The fade between frames. */
+  public static double fade = 0.95;
+
+  /** The image. */
   private final BufferedImage img;
-
+  /** The animator that animates the particles. */
   private final Animator animator;
-
+  /** The private animated object that notifies a redraw. */
   private final Animated animated;
-
+  /** The list of particles. */
   private final ParticleList<Particle> particles;
-
+  /** Whether a redraw is necessary. Value is larger than 0. */
   protected AtomicInteger ready;
-
+  /** Whether the render pass is running. */
   protected volatile boolean running;
 
+  /**
+   * Creates a new trail render pass.
+   * 
+   * @param animator The animator.
+   * @param width The width of the image.
+   * @param height The height of the image.
+   */
   public TrailRenderpass(final Animator animator, final int width, final int height) {
     this.animator = Objects.requireNonNull(animator);
     img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -52,41 +70,74 @@ public class TrailRenderpass extends RenderpassAdapter {
     running = true;
   }
 
+  /**
+   * Adds a particle.
+   * 
+   * @param p The particle.
+   */
   public void add(final Particle p) {
     animator.getAnimationList().addAnimated(p);
     particles.add(p);
   }
 
+  /**
+   * Removes a particle.
+   * 
+   * @param p The particle.
+   */
   public void remove(final Particle p) {
     particles.remove(p);
   }
 
+  /** Signals that a redraw is necessary. */
   protected void step() {
     ready.incrementAndGet();
   }
 
+  /**
+   * Setter.
+   * 
+   * @param running Sets the running state.
+   */
   public void setRunning(final boolean running) {
     this.running = running;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether the render pass is running.
+   */
   public boolean isRunning() {
     return running;
   }
 
+  /**
+   * Fades the image.
+   * 
+   * @param g The image.
+   * @param alpha The strength of the fade.
+   */
   private void fade(final Graphics2D g, final double alpha) {
     g.setColor(Color.BLACK);
     PaintUtil.setAlpha(g, 1.0 - alpha);
     g.fillRect(0, 0, getWidth(), getHeight());
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Creates the graphics context of the image.
+   */
   protected Graphics2D getGraphics() {
     return (Graphics2D) img.getGraphics();
   }
 
+  /** Computes the next actual image. */
   protected void stepImage() {
     final Graphics2D g = getGraphics();
-    fade(g, 0.95);
-    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 0.97f));
+    fade(g, fade);
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, particleStrength));
     g.setColor(new Color(0.1f, 0.1f, 1f));
     for(final Particle p : particles) {
       g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));
@@ -111,10 +162,20 @@ public class TrailRenderpass extends RenderpassAdapter {
     return new Rectangle2D.Double(0, 0, getWidth(), getHeight());
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The width of the image.
+   */
   public int getWidth() {
     return img.getWidth();
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The height of the image.
+   */
   public int getHeight() {
     return img.getHeight();
   }
