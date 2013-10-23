@@ -13,6 +13,7 @@ import jkanvas.animation.Animated;
 import jkanvas.animation.Animator;
 import jkanvas.painter.RenderpassAdapter;
 import jkanvas.util.PaintUtil;
+import jkanvas.util.SnapshotList.Snapshot;
 
 /**
  * Renders trails.
@@ -139,8 +140,13 @@ public class TrailRenderpass extends RenderpassAdapter {
     fade(g, fade);
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, particleStrength));
     g.setColor(new Color(0.1f, 0.1f, 1f));
-    for(final Particle p : particles) {
-      g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));
+    try (Snapshot<Particle> s = particles.getSnapshot()) {
+      for(final Particle p : s) {
+        if(p == null) {
+          continue;
+        }
+        g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));
+      }
     }
     g.dispose();
   }

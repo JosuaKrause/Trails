@@ -12,7 +12,7 @@ import jkanvas.animation.GenericAnimated;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Particle extends AnimatedPosition {
+public class Particle extends AnimatedPosition implements Revokable {
 
   /** The curve bend ratio. */
   public static double bendRatio = 0.4;
@@ -53,6 +53,19 @@ public class Particle extends AnimatedPosition {
       }
 
     };
+  }
+
+  /** Whether this particle is still active. */
+  private boolean active = true;
+
+  @Override
+  public boolean isActive() {
+    return active;
+  }
+
+  @Override
+  public void deactivate() {
+    active = false;
   }
 
 }
