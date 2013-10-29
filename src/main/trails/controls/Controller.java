@@ -1,10 +1,13 @@
-package trails;
+package trails.controls;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import jkanvas.Refreshable;
+import trails.particels.Particle;
+import trails.particels.TrailRenderpass;
 
 /**
  * The controller controls the values that can be customized.
@@ -76,6 +79,11 @@ public class Controller {
       }
 
     });
+  }
+
+  public void addControlledValue(final ControlledValue val) {
+    Objects.requireNonNull(val);
+    values.add(val);
   }
 
   /**

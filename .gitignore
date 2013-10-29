@@ -3,3 +3,4 @@ bin
 /java.hprof.txt
 target
 /pics/
+/*.csv.zip

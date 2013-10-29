@@ -1,4 +1,4 @@
-package trails;
+package trails.controls;
 
 import java.util.Objects;
 

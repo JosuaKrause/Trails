@@ -1,4 +1,4 @@
-package trails;
+package trails.particels;
 
 /**
  * This interface marks a object to be able to be switched off.

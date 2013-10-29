@@ -1,4 +1,4 @@
-package trails;
+package trails.particels;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -142,7 +142,7 @@ public class TrailRenderpass extends RenderpassAdapter {
     g.setColor(new Color(0.1f, 0.1f, 1f));
     try (Snapshot<Particle> s = particles.getSnapshot()) {
       for(final Particle p : s) {
-        if(p == null) {
+        if(p == null || !p.shouldDraw()) {
           continue;
         }
         g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));

@@ -1,4 +1,4 @@
-package trails;
+package trails.particels;
 
 import java.util.Map;
 import java.util.Objects;

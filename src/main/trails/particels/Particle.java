@@ -1,4 +1,4 @@
-package trails;
+package trails.particels;
 
 import static jkanvas.util.VecUtil.*;
 
@@ -18,7 +18,7 @@ public class Particle extends AnimatedPosition implements Revokable {
   public static double bendRatio = 0.4;
 
   /** The particle size. */
-  private final double size;
+  private double size;
 
   /**
    * Creates a particle at the given position.
@@ -33,12 +33,31 @@ public class Particle extends AnimatedPosition implements Revokable {
   }
 
   /**
+   * Setter.
+   * 
+   * @param size The size of the particle.
+   */
+  public void setSize(final double size) {
+    this.size = size;
+  }
+
+  /**
    * Getter.
    * 
    * @return The size of the particle.
    */
   public double getSize() {
     return size;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the particle should be drawn.
+   */
+  public boolean shouldDraw() {
+    return !(Double.isNaN(size) || Double.isNaN(getX()) || Double.isNaN(getY()))
+        && active;
   }
 
   @Override
