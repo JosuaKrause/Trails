@@ -29,18 +29,18 @@ public class CSVTripLoader {
     this.r = Objects.requireNonNull(r);
   }
 
-  public void loadTrips(final File out) throws IOException {
+  public void loadTrips(final File out, final int off) throws IOException {
     final Integer[] perm = getPermutation();
+    final Trip t = new Trip();
     try (RandomAccessFile outFile = new RandomAccessFile(out, "w")) {
       outFile.setLength(Trip.byteSize() * perm.length);
       final Iterator<CSVRow> it = openFile("trip_data_1.csv");
-      int rowNo = 0;
+      int rowNo = off;
       while(it.hasNext()) {
         final CSVRow row = it.next();
-        Trip t = null;
         // read the trip
         try {
-          t = new Trip(
+          t.set(rowNo,
               row.get("pickup_latitude"),
               row.get("pickup_longitude"),
               row.get("pickup_datetime"),
@@ -50,14 +50,9 @@ public class CSVTripLoader {
         } catch(final IllegalArgumentException e) {
           System.err.println("invalid row detected");
           e.printStackTrace();
+          t.setInvalid(rowNo);
         }
-        if(t == null) {
-          t = new Trip();
-        }
-        // write the trip
-        outFile.seek(perm[rowNo] * Trip.byteSize());
         t.write(outFile);
-        // row numbers
         ++rowNo;
       }
     }
@@ -115,7 +110,7 @@ public class CSVTripLoader {
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    l.loadTrips(dump.directFile());
+    l.loadTrips(dump.directFile(), 0);
   }
 
 }

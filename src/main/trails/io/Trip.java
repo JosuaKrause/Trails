@@ -9,24 +9,28 @@ import java.util.Locale;
 
 public class Trip {
 
-  public final double pLat;
+  private long index;
 
-  public final double pLon;
+  private double pLat;
 
-  public final long pTime;
+  private double pLon;
 
-  public final double dLat;
+  private long pTime;
 
-  public final double dLon;
+  private double dLat;
 
-  public final long dTime;
+  private double dLon;
+
+  private long dTime;
 
   public Trip() {
-    this(Double.NaN, Double.NaN, -1L, Double.NaN, Double.NaN, -1L);
+    set(-1, Double.NaN, Double.NaN, -1L, Double.NaN, Double.NaN, -1L);
   }
 
-  public Trip(final String pickupLat, final String pickupLon, final String pickupTime,
+  public void set(final int index, final String pickupLat, final String pickupLon,
+      final String pickupTime,
       final String dropoffLat, final String dropoffLon, final String dropoffTime) {
+    this.index = index;
     pLat = parseDouble(pickupLat);
     pLon = parseDouble(pickupLon);
     dLat = parseDouble(dropoffLat);
@@ -35,8 +39,10 @@ public class Trip {
     dTime = parseDate(dropoffTime);
   }
 
-  private Trip(final double pLat, final double pLon, final long pTime, final double dLat,
-      final double dLon, final long dTime) {
+  public void set(final int index, final double pLat, final double pLon,
+      final long pTime,
+      final double dLat, final double dLon, final long dTime) {
+    this.index = index;
     this.pLat = pLat;
     this.pLon = pLon;
     this.pTime = pTime;
@@ -46,9 +52,16 @@ public class Trip {
   }
 
   public boolean isValid() {
-    return !Double.isNaN(dLat) && !Double.isNaN(dLon) &&
+    return index >= 0 && pTime >= 0 && dTime >= 0 &&
         !Double.isNaN(pLat) && !Double.isNaN(pLon) &&
-        pTime >= 0L && dTime >= 0L;
+        !Double.isNaN(dLat) && !Double.isNaN(dLon);
+  }
+
+  public void setInvalid(final int index) {
+    this.index = index;
+    pTime = -1;
+    dTime = -1;
+    pLat = pLon = dLat = dLon = Double.NaN;
   }
 
   private static double parseDouble(final String d) {
@@ -72,6 +85,8 @@ public class Trip {
   }
 
   public void write(final RandomAccessFile out) throws IOException {
+    if(index < 0) throw new IllegalArgumentException("" + index);
+    out.seek(index * byteSize());
     out.writeLong(pTime); // 8
     out.writeLong(dTime); // 8
     out.writeDouble(pLat); // 8
@@ -81,7 +96,9 @@ public class Trip {
     // total bytes: 48
   }
 
-  public static Trip read(final RandomAccessFile in) throws IOException {
+  public void read(final RandomAccessFile in, final int index) throws IOException {
+    if(index < 0) throw new IllegalArgumentException("" + index);
+    in.seek(index * byteSize());
     final long pTime = in.readLong(); // 8
     final long dTime = in.readLong(); // 8
     final double pLat = in.readDouble(); // 8
@@ -89,7 +106,7 @@ public class Trip {
     final double dLat = in.readDouble(); // 8
     final double dLon = in.readDouble(); // 8
     // total bytes: 48
-    return new Trip(pLat, pLon, pTime, dLat, dLon, dTime);
+    set(index, pLat, pLon, pTime, dLat, dLon, dTime);
   }
 
   public static long byteSize() {
