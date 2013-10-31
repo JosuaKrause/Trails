@@ -32,10 +32,10 @@ public class CSVTripLoader {
   public void loadTrips(final File out, final int off) throws IOException {
     final Integer[] perm = getPermutation();
     final Trip t = new Trip();
-    try (RandomAccessFile outFile = new RandomAccessFile(out, "w")) {
+    try (RandomAccessFile outFile = new RandomAccessFile(out, "rw")) {
       outFile.setLength(Trip.byteSize() * perm.length);
-      final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       int rowNo = off;
+      final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       while(it.hasNext()) {
         final CSVRow row = it.next();
         // read the trip
@@ -55,6 +55,7 @@ public class CSVTripLoader {
         t.write(outFile);
         ++rowNo;
       }
+      System.out.println(rowNo + " trips");
     }
   }
 
@@ -63,11 +64,10 @@ public class CSVTripLoader {
     final Iterator<CSVRow> it = openFile("trip_data_1.csv");
     while(it.hasNext()) {
       final CSVRow row = it.next();
-      System.out.println(row.get("pickup_datetime"));
       final long date = Trip.parseDate(row.get("pickup_datetime"));
-      System.out.println(date);
       times.add(date);
     }
+    System.out.println(times.size() + " " + Runtime.getRuntime().totalMemory());
     final Integer[] perm = new Integer[times.size()];
     for(int i = 0; i < perm.length; ++i) {
       perm[i] = i;
@@ -111,6 +111,12 @@ public class CSVTripLoader {
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
     l.loadTrips(dump.directFile(), 0);
+    System.out.println("finished!");
+
+    // RandomAccessFile raf = new RandomAccessFile(file, "r");
+    // FileChannel fc = raf.getChannel();
+    // MappedByteBuffer buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0,
+    // fc.size());
   }
 
 }

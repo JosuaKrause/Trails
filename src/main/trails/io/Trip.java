@@ -75,11 +75,24 @@ public class Trip {
   /** The date format. */
   private static final String DATE_PARSER = "yyyy-MM-dd HH:mm:ss";
 
+  private static final boolean USE_SAFE = true;
+
   public static long parseDate(final String d) {
     try {
-      final Date date = new SimpleDateFormat(DATE_PARSER, Locale.US).parse(d);
-      return date.getTime();
-    } catch(ParseException | NullPointerException e) {
+      if(!USE_SAFE) {
+        final Date date = new SimpleDateFormat(DATE_PARSER, Locale.US).parse(d);
+        return date.getTime();
+      }
+      final int year = Integer.parseInt(d.substring(0, 4));
+      final int month = Integer.parseInt(d.substring(5, 7));
+      final int day = Integer.parseInt(d.substring(8, 10));
+      final int hour = Integer.parseInt(d.substring(11, 13));
+      final int min = Integer.parseInt(d.substring(14, 16));
+      final int sec = Integer.parseInt(d.substring(17, 19));
+      // cannot use calendar -- therefore inaccurate
+      return ((((((year - 1970L) * 12L + month) * 30L + day)
+      * 24L + hour) * 60L + min) * 60L + sec) * 1000L;
+    } catch(NumberFormatException | ParseException | NullPointerException e) {
       throw new IllegalArgumentException(e);
     }
   }
