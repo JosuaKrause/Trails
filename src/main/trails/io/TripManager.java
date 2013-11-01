@@ -12,9 +12,9 @@ import jkanvas.util.Resource;
 
 public class TripManager implements AutoCloseable {
 
-  protected static final boolean SCAN_ALL = true;
+  protected static final boolean SCAN_ALL = false;
 
-  protected static int blockTrips = 100000;
+  protected static int blockTrips = 10000;
 
   private class TripBlock {
 
@@ -216,6 +216,11 @@ public class TripManager implements AutoCloseable {
     if(!bin.hasContent()) {
       final CSVTripLoader loader = new CSVTripLoader(origin);
       loader.loadTrips(bin.directFile(), 0L);
+    }
+    try (TripSorter sorter = new TripSorter(bin.directFile())) {
+      sorter.sort();
+    } catch(final Exception e) {
+      throw new IOException(e);
     }
     return new TripManager(bin);
   }

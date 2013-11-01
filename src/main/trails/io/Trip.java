@@ -80,6 +80,10 @@ public class Trip {
     this.dTime = dTime;
   }
 
+  public void setIndex(final long index) {
+    this.index = index;
+  }
+
   public boolean isValid() {
     return index >= 0 && pTime >= 0 && dTime >= 0 &&
         !Double.isNaN(pLat) && !Double.isNaN(pLon) &&
@@ -142,6 +146,10 @@ public class Trip {
     in.position((int) ((index - offset) * byteSize()));
   }
 
+  public static void seek(final RandomAccessFile in, final long index) throws IOException {
+    in.seek(index * byteSize());
+  }
+
   public void read(final ByteBuffer in, final long index) throws IOException {
     if(index < 0) throw new IllegalArgumentException("" + index);
     final long pTime = in.getLong(); // 8
@@ -150,6 +158,18 @@ public class Trip {
     final double pLon = in.getDouble(); // 8
     final double dLat = in.getDouble(); // 8
     final double dLon = in.getDouble(); // 8
+    // total bytes: 48
+    set(index, pLat, pLon, pTime, dLat, dLon, dTime);
+  }
+
+  public void read(final RandomAccessFile in, final long index) throws IOException {
+    if(index < 0) throw new IllegalArgumentException("" + index);
+    final long pTime = in.readLong(); // 8
+    final long dTime = in.readLong(); // 8
+    final double pLat = in.readDouble(); // 8
+    final double pLon = in.readDouble(); // 8
+    final double dLat = in.readDouble(); // 8
+    final double dLon = in.readDouble(); // 8
     // total bytes: 48
     set(index, pLat, pLon, pTime, dLat, dLon, dTime);
   }

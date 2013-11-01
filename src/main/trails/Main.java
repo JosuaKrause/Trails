@@ -60,7 +60,9 @@ public class Main {
     final Resource origin = Resource.getFor("trip_data_1.csv.zip");
     final Resource bin = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    final TimeSlicer slicer = new TripSlicer(TripManager.getManager(bin, origin));
+    final TripManager mng = TripManager.getManager(bin, origin);
+    final TimeSlicer slicer = new TripSlicer(mng);
+    System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);
 
     final Controller ctrl = new Controller(c);

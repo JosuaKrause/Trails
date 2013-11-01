@@ -65,22 +65,13 @@ public class Controller {
       }
 
     });
-    values.add(new ControlledValue("Aggregation Radius", refreshee, 0.0, 100.0) {
-
-      @Override
-      protected void setValueDirectly(final double value) {
-        // TODO Auto-generated method stub
-      }
-
-      @Override
-      public double getValue() {
-        // TODO Auto-generated method stub
-        return 0;
-      }
-
-    });
   }
 
+  /**
+   * Adds another controlled value.
+   * 
+   * @param val The controlled value.
+   */
   public void addControlledValue(final ControlledValue val) {
     Objects.requireNonNull(val);
     values.add(val);

@@ -6,11 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -30,10 +26,8 @@ public class CSVTripLoader {
   }
 
   public void loadTrips(final File out, final long off) throws IOException {
-    final Integer[] perm = getPermutation();
     final Trip t = new Trip();
     try (RandomAccessFile outFile = new RandomAccessFile(out, "rw")) {
-      outFile.setLength(Trip.byteSize() * perm.length);
       long rowNo = off;
       final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       while(it.hasNext()) {
@@ -52,35 +46,12 @@ public class CSVTripLoader {
           e.printStackTrace();
           t.setInvalid(rowNo);
         }
+        outFile.setLength(Math.max(Trip.byteSize() * rowNo, outFile.length()));
         t.write(outFile);
         ++rowNo;
       }
       System.out.println(rowNo + " trips");
     }
-  }
-
-  private Integer[] getPermutation() throws IOException {
-    final List<Long> times = new ArrayList<>();
-    final Iterator<CSVRow> it = openFile("trip_data_1.csv");
-    while(it.hasNext()) {
-      final CSVRow row = it.next();
-      final long date = Trip.parseDate(row.get("pickup_datetime"));
-      times.add(date);
-    }
-    System.out.println(times.size() + " " + Runtime.getRuntime().totalMemory());
-    final Integer[] perm = new Integer[times.size()];
-    for(int i = 0; i < perm.length; ++i) {
-      perm[i] = i;
-    }
-    Arrays.sort(perm, new Comparator<Integer>() {
-
-      @Override
-      public int compare(final Integer o1, final Integer o2) {
-        return Long.compare(times.get(o1), times.get(o2));
-      }
-
-    });
-    return perm;
   }
 
   private Iterator<CSVRow> openFile(final String name) throws IOException {
