@@ -112,11 +112,6 @@ public class CSVTripLoader {
         (String) null, "trip_data_1.dat", (String) null, (String) null);
     l.loadTrips(dump.directFile(), 0);
     System.out.println("finished!");
-
-    // RandomAccessFile raf = new RandomAccessFile(file, "r");
-    // FileChannel fc = raf.getChannel();
-    // MappedByteBuffer buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0,
-    // fc.size());
   }
 
 }

@@ -2,6 +2,7 @@ package trails.io;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,8 +28,36 @@ public class Trip {
     set(-1, Double.NaN, Double.NaN, -1L, Double.NaN, Double.NaN, -1L);
   }
 
-  public void set(final int index, final String pickupLat, final String pickupLon,
-      final String pickupTime,
+  public long getIndex() {
+    return index;
+  }
+
+  public double getPickupLat() {
+    return pLat;
+  }
+
+  public double getPickupLon() {
+    return pLon;
+  }
+
+  public double getDropoffLat() {
+    return dLat;
+  }
+
+  public double getDropoffLon() {
+    return dLon;
+  }
+
+  public long getDropoffTime() {
+    return dTime;
+  }
+
+  public long getPickupTime() {
+    return pTime;
+  }
+
+  public void set(final long index,
+      final String pickupLat, final String pickupLon, final String pickupTime,
       final String dropoffLat, final String dropoffLon, final String dropoffTime) {
     this.index = index;
     pLat = parseDouble(pickupLat);
@@ -39,8 +68,8 @@ public class Trip {
     dTime = parseDate(dropoffTime);
   }
 
-  public void set(final int index, final double pLat, final double pLon,
-      final long pTime,
+  public void set(final long index,
+      final double pLat, final double pLon, final long pTime,
       final double dLat, final double dLon, final long dTime) {
     this.index = index;
     this.pLat = pLat;
@@ -57,7 +86,7 @@ public class Trip {
         !Double.isNaN(dLat) && !Double.isNaN(dLon);
   }
 
-  public void setInvalid(final int index) {
+  public void setInvalid(final long index) {
     this.index = index;
     pTime = -1;
     dTime = -1;
@@ -109,15 +138,18 @@ public class Trip {
     // total bytes: 48
   }
 
-  public void read(final RandomAccessFile in, final int index) throws IOException {
+  public static void seek(final ByteBuffer in, final int index, final long offset) {
+    in.position((int) (index * byteSize() - offset));
+  }
+
+  public void read(final ByteBuffer in, final long index) throws IOException {
     if(index < 0) throw new IllegalArgumentException("" + index);
-    in.seek(index * byteSize());
-    final long pTime = in.readLong(); // 8
-    final long dTime = in.readLong(); // 8
-    final double pLat = in.readDouble(); // 8
-    final double pLon = in.readDouble(); // 8
-    final double dLat = in.readDouble(); // 8
-    final double dLon = in.readDouble(); // 8
+    final long pTime = in.getLong(); // 8
+    final long dTime = in.getLong(); // 8
+    final double pLat = in.getDouble(); // 8
+    final double pLon = in.getDouble(); // 8
+    final double dLat = in.getDouble(); // 8
+    final double dLon = in.getDouble(); // 8
     // total bytes: 48
     set(index, pLat, pLon, pTime, dLat, dLon, dTime);
   }
