@@ -77,6 +77,12 @@ public class CSVTripLoader {
     return CSVReader.readRows(r.getFile(name).reader(), reader);
   }
 
+  /**
+   * Tests the CSV loader.
+   * 
+   * @param args No args.
+   * @throws IOException I/O Exception.
+   */
   public static void main(final String[] args) throws IOException {
     System.out.println("start converting");
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));

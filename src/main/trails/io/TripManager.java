@@ -10,30 +10,65 @@ import java.util.List;
 
 import jkanvas.util.Resource;
 
+/**
+ * Manages the trips file.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class TripManager implements AutoCloseable {
 
+  /** Enforces sorting of the file. */
+  private static final boolean ENFORCE_SORT = true;
+  /** Enforces to scan all records when searching. */
   protected static final boolean SCAN_ALL = false;
-
+  /** How many trips a block has. */
   protected static int blockTrips = 10000;
 
+  /**
+   * A block in the file.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
   private class TripBlock {
 
+    /** The index offset for the block. */
     private final long offset;
-
+    /** The number of trips in the block. */
     private final long trips;
-
+    /** The time of the first entry. */
     private long startTime = -1;
-
+    /** The time of the last entry. */
     private long endTime = -1;
-
+    /** The memory map. */
     private MappedByteBuffer buffer;
 
-    public TripBlock(final long from, final long trips) throws IOException {
+    /**
+     * Creates a block.
+     * 
+     * @param from The starting index.
+     * @param trips The number of trips.
+     */
+    public TripBlock(final long from, final long trips) {
       offset = from;
       this.trips = Math.min(trips, blockTrips);
       buffer = null;
     }
 
+    /**
+     * Checks whether the given index is in this block.
+     * 
+     * @param index The index.
+     * @return Whether the index is in this block.
+     */
+    public boolean contains(final long index) {
+      return index >= offset && index < offset + trips;
+    }
+
+    /**
+     * Ensures that the buffer exists.
+     * 
+     * @throws IOException I/O exception.
+     */
     private void ensureBuffer() throws IOException {
       ensureOpen();
       if(buffer == null) {
@@ -42,10 +77,21 @@ public class TripManager implements AutoCloseable {
       }
     }
 
+    /**
+     * Getter.
+     * 
+     * @return The number of trips.
+     */
     public long getTrips() {
       return trips;
     }
 
+    /**
+     * Getter.
+     * 
+     * @return The time of the first entry.
+     * @throws IOException I/O Exception.
+     */
     public long getStartTime() throws IOException {
       if(startTime < 0) {
         ensureBuffer();
@@ -66,6 +112,12 @@ public class TripManager implements AutoCloseable {
       return startTime;
     }
 
+    /**
+     * Getter.
+     * 
+     * @return The time of the last entry.
+     * @throws IOException I/O Exception.
+     */
     public long getEndTime() throws IOException {
       if(endTime < 0) {
         ensureBuffer();
@@ -86,6 +138,14 @@ public class TripManager implements AutoCloseable {
       return endTime;
     }
 
+    /**
+     * Reads all entries of the block matching the criterias.
+     * 
+     * @param list The list to fill.
+     * @param fromTime The inclusive lowest time that will be added.
+     * @param toTime The inclusive highest time will be added.
+     * @throws IOException I/O Exception.
+     */
     public void read(final List<Trip> list, final long fromTime, final long toTime)
         throws IOException {
       ensureBuffer();
@@ -121,6 +181,13 @@ public class TripManager implements AutoCloseable {
       }
     }
 
+    /**
+     * Reads the trip at the given index.
+     * 
+     * @param trip The trip to store the info.
+     * @param index The absolute index of the trip.
+     * @throws IOException I/O Exception.
+     */
     public void read(final Trip trip, final long index) throws IOException {
       ensureBuffer();
       Trip.seek(buffer, index, offset);
@@ -129,11 +196,21 @@ public class TripManager implements AutoCloseable {
 
   } // TripBlock
 
+  /** The total number of trips. */
   private final long size;
+  /** The file. */
   private RandomAccessFile raf;
+  /** The list of blocks. */
   private final List<TripBlock> blocks;
+  /** The file channel. */
   protected final FileChannel fc;
 
+  /**
+   * Creates a new trip manager.
+   * 
+   * @param r The resource.
+   * @throws IOException I/O Exception.
+   */
   public TripManager(final Resource r) throws IOException {
     raf = new RandomAccessFile(r.directFile(), "r");
     fc = raf.getChannel();
@@ -147,10 +224,19 @@ public class TripManager implements AutoCloseable {
     }
   }
 
-  private void ensureOpen() {
+  /** Guarantees that the file is still open. */
+  protected void ensureOpen() {
     if(raf == null) throw new IllegalStateException("already closed");
   }
 
+  /**
+   * Reads all trips that lie in the given time span.
+   * 
+   * @param fromTime The lowest inclusive time.
+   * @param toTime The highest inclusive time.
+   * @return The list containing the trips.
+   * @throws IOException I/O Exception.
+   */
   public List<Trip> read(final long fromTime, final long toTime) throws IOException {
     if(fromTime > toTime) throw new IllegalArgumentException(fromTime + " > " + toTime);
     if(SCAN_ALL) {
@@ -186,17 +272,40 @@ public class TripManager implements AutoCloseable {
     return list;
   }
 
+  /**
+   * Reads the trip at the given index.
+   * 
+   * @param trip The trip to store the result in.
+   * @param index The index.
+   * @throws IOException I/O Exception.
+   */
   public void read(final Trip trip, final long index) throws IOException {
-    final int blockIndex = (int) (index / blockTrips);
-    final TripBlock block = blocks.get(blockIndex);
-    block.read(trip, index);
+    for(final TripBlock block : blocks) {
+      if(block.contains(index)) {
+        block.read(trip, index);
+        return;
+      }
+    }
+    throw new IndexOutOfBoundsException("" + index);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The time of the very first entry.
+   * @throws IOException I/O Exception.
+   */
   public long getStartTime() throws IOException {
     if(blocks.size() <= 0) return -1L;
     return blocks.get(0).getStartTime();
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The time of the very last entry.
+   * @throws IOException I/O Exception.
+   */
   public long getEndTime() throws IOException {
     if(blocks.size() <= 0) return -1L;
     return blocks.get(blocks.size() - 1).getEndTime();
@@ -211,16 +320,27 @@ public class TripManager implements AutoCloseable {
     }
   }
 
+  /**
+   * Constructs a trip manager. The binary file gets created, filled, and sorted
+   * if not already done. This may take a while.
+   * 
+   * @param bin The binary file.
+   * @param origin The CSV file.
+   * @return The trip manager.
+   * @throws IOException I/O Exception.
+   */
   public static TripManager getManager(final Resource bin, final Resource origin)
       throws IOException {
     if(!bin.hasContent()) {
       final CSVTripLoader loader = new CSVTripLoader(origin);
       loader.loadTrips(bin.directFile(), 0L);
     }
-    try (TripSorter sorter = new TripSorter(bin.directFile())) {
-      sorter.sort();
-    } catch(final Exception e) {
-      throw new IOException(e);
+    if(ENFORCE_SORT) {
+      try (TripSorter sorter = new TripSorter(bin.directFile())) {
+        sorter.sort();
+      } catch(final Exception e) {
+        throw new IOException(e);
+      }
     }
     return new TripManager(bin);
   }

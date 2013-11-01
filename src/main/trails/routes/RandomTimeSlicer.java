@@ -6,6 +6,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
 
+/**
+ * Provides random time slices.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class RandomTimeSlicer implements TimeSlicer {
 
   /**

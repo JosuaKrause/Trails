@@ -10,12 +10,20 @@ import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Interpolator;
 
+/**
+ * Provides particles to animate. The particles are managed internally.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public final class ParticleProvider {
 
+  /** The render pass for the particles. */
   private final TrailRenderpass trails;
+  /** The tick action. */
   private final AnimationAction tick;
+  /** The queue of unused particles. */
   protected final Queue<PathParticle> unused;
-
+  /** The duration of a slice. */
   private long sliceTime;
 
   public ParticleProvider(final Animator animator, final TrailRenderpass trails,
@@ -116,6 +124,7 @@ public final class ParticleProvider {
         break;
       }
     }
+    System.out.println("cleaned " + i + " particles");
   }
 
   public long getSliceTime() {
