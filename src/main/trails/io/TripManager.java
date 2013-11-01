@@ -12,17 +12,15 @@ import jkanvas.util.Resource;
 
 public class TripManager implements AutoCloseable {
 
-  protected static int blockSizeTrips = (int) (Integer.MAX_VALUE / Trip.byteSize());
+  protected static final boolean SCAN_ALL = true;
 
-  protected static long blockSize = blockSizeTrips * Trip.byteSize();
+  protected static int blockTrips = 100000;
 
   private class TripBlock {
 
     private final long offset;
 
-    private final int trips;
-
-    private final int size;
+    private final long trips;
 
     private long startTime = -1;
 
@@ -30,29 +28,29 @@ public class TripManager implements AutoCloseable {
 
     private MappedByteBuffer buffer;
 
-    public TripBlock(final long from, final long size) throws IOException {
+    public TripBlock(final long from, final long trips) throws IOException {
       offset = from;
-      this.size = (int) Math.min(size, blockSize);
-      trips = (int) (this.size / Trip.byteSize());
+      this.trips = Math.min(trips, blockTrips);
       buffer = null;
     }
 
     private void ensureBuffer() throws IOException {
       ensureOpen();
       if(buffer == null) {
-        buffer = fc.map(FileChannel.MapMode.READ_ONLY, offset, size);
+        buffer = fc.map(FileChannel.MapMode.READ_ONLY,
+            offset * Trip.byteSize(), trips * Trip.byteSize());
       }
     }
 
-    public int getSize() {
-      return size;
+    public long getTrips() {
+      return trips;
     }
 
     public long getStartTime() throws IOException {
       if(startTime < 0) {
         ensureBuffer();
         final Trip trip = new Trip();
-        Trip.seek(buffer, 0, offset);
+        Trip.seek(buffer, offset, offset);
         for(int i = 0; i < trips; ++i) {
           trip.read(buffer, offset + i);
           if(trip.isValid()) {
@@ -72,8 +70,8 @@ public class TripManager implements AutoCloseable {
       if(endTime < 0) {
         ensureBuffer();
         final Trip trip = new Trip();
-        for(int i = trips - 1; i >= 0; --i) {
-          Trip.seek(buffer, i, offset);
+        for(long i = trips - 1; i >= 0; --i) {
+          Trip.seek(buffer, offset + i, offset);
           trip.read(buffer, offset + i);
           if(trip.isValid()) {
             break;
@@ -90,8 +88,24 @@ public class TripManager implements AutoCloseable {
 
     public void read(final List<Trip> list, final long fromTime, final long toTime)
         throws IOException {
+      ensureBuffer();
+      Trip.seek(buffer, offset, offset);
+      if(SCAN_ALL) {
+        for(int i = 0; i < trips; ++i) {
+          final Trip trip = new Trip();
+          trip.read(buffer, i + offset);
+          if(!trip.isValid()) {
+            System.err.println("invalid entry");
+            continue;
+          }
+          final long time = trip.getPickupTime();
+          if(time <= toTime && time >= fromTime) {
+            list.add(trip);
+          }
+        }
+        return;
+      }
       Trip cur = new Trip();
-      Trip.seek(buffer, 0, offset);
       for(int i = 0; i < trips; ++i) {
         cur.read(buffer, i + offset);
         if(!cur.isValid()) {
@@ -107,27 +121,28 @@ public class TripManager implements AutoCloseable {
       }
     }
 
-    public void read(final Trip trip, final long index, final int i) throws IOException {
-      Trip.seek(buffer, i, offset);
+    public void read(final Trip trip, final long index) throws IOException {
+      ensureBuffer();
+      Trip.seek(buffer, index, offset);
       trip.read(buffer, index);
     }
 
   } // TripBlock
 
-  private final FileChannel fc;
   private final long size;
   private RandomAccessFile raf;
   private final List<TripBlock> blocks;
+  protected final FileChannel fc;
 
   public TripManager(final Resource r) throws IOException {
     raf = new RandomAccessFile(r.directFile(), "r");
     fc = raf.getChannel();
-    size = fc.size();
+    size = fc.size() / Trip.byteSize();
     blocks = new ArrayList<>();
     long offset = 0;
     while(offset < size) {
       final TripBlock block = new TripBlock(offset, size - offset);
-      offset += block.getSize();
+      offset += block.getTrips();
       blocks.add(block);
     }
   }
@@ -138,6 +153,13 @@ public class TripManager implements AutoCloseable {
 
   public List<Trip> read(final long fromTime, final long toTime) throws IOException {
     if(fromTime > toTime) throw new IllegalArgumentException(fromTime + " > " + toTime);
+    if(SCAN_ALL) {
+      final List<Trip> list = new ArrayList<>();
+      for(final TripBlock block : blocks) {
+        block.read(list, fromTime, toTime);
+      }
+      return list;
+    }
     int blockIndex = 0;
     for(;;) {
       if(blockIndex >= blocks.size()) return Collections.emptyList();
@@ -165,10 +187,9 @@ public class TripManager implements AutoCloseable {
   }
 
   public void read(final Trip trip, final long index) throws IOException {
-    final int blockIndex = (int) (index / blockSize);
-    final int inIndex = (int) (index % blockSize);
+    final int blockIndex = (int) (index / blockTrips);
     final TripBlock block = blocks.get(blockIndex);
-    block.read(trip, index, inIndex);
+    block.read(trip, index);
   }
 
   public long getStartTime() throws IOException {

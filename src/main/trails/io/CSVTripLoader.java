@@ -107,6 +107,7 @@ public class CSVTripLoader {
   }
 
   public static void main(final String[] args) throws IOException {
+    System.out.println("start converting");
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);

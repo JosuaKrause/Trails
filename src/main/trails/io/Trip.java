@@ -138,8 +138,8 @@ public class Trip {
     // total bytes: 48
   }
 
-  public static void seek(final ByteBuffer in, final int index, final long offset) {
-    in.position((int) (index * byteSize() - offset));
+  public static void seek(final ByteBuffer in, final long index, final long offset) {
+    in.position((int) ((index - offset) * byteSize()));
   }
 
   public void read(final ByteBuffer in, final long index) throws IOException {

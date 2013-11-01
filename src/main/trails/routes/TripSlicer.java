@@ -14,7 +14,7 @@ public class TripSlicer implements TimeSlicer {
 
   private final TripManager mng;
 
-  private long timeSlice = 60L * 60L * 1000L; // 1hour
+  private long timeSlice = 15L * 60L * 1000L; // 15min
 
   private long curTime;
 
@@ -32,23 +32,50 @@ public class TripSlicer implements TimeSlicer {
     this.timeSlice = timeSlice;
   }
 
+  private static double left = -74.099464;
+
+  private static double right = -73.760262;
+
+  private static double bottom = 40.532589;
+
+  private static double top = 40.862122;
+
+  private static double getX(final double lon, final int width) {
+    return (lon - left) / (right - left) * width;
+  }
+
+  private static double getY(final double lat, final int height) {
+    return (lat - top) / (bottom - top) * height;
+  }
+
+  private static final boolean SKIP_GAPS = true;
+
   @Override
   public void timeSlice(final ParticleProvider provider, final int width, final int height) {
     if(curTime < 0) throw new IllegalStateException("no start");
-    final long curEnd = curTime + timeSlice - 1L;
     try {
-      final List<Trip> list = mng.read(curTime, curEnd);
-      System.out.println(list.size());
-      for(final Trip t : list) {
-        final int slices = (int) ((t.getDropoffTime() - curTime) / timeSlice) + 1;
-        provider.startPath(-t.getPickupLon(), t.getPickupLat(),
-            new Point2D.Double(-t.getDropoffLon(), t.getDropoffLat()), slices, 2.0);
-      }
-      final long end = mng.getEndTime();
-      curTime = curEnd + 1L;
-      if(curTime > end) {
-        curTime = mng.getStartTime();
-      }
+      int no;
+      do {
+        final long curEnd = curTime + timeSlice - 1L;
+        final List<Trip> list = mng.read(curTime, curEnd);
+        for(final Trip t : list) {
+          final int slices = (int) ((t.getDropoffTime() - curTime) / timeSlice) + 1;
+          final double startX = getX(t.getPickupLon(), width);
+          final double startY = getY(t.getPickupLat(), height);
+          final double endX = getX(t.getDropoffLon(), width);
+          final double endY = getY(t.getDropoffLat(), height);
+          provider.startPath(startX, startY,
+              new Point2D.Double(endX, endY), slices, 2.0);
+        }
+        final long end = mng.getEndTime();
+        curTime = curEnd + 1L;
+        if(curTime > end) {
+          curTime = mng.getStartTime();
+          System.out.println("full cycle!");
+        }
+        no = list.size();
+        System.out.println("trips: " + no);
+      } while(SKIP_GAPS && no == 0);
     } catch(final IOException io) {
       throw new IllegalStateException(io);
     }
