@@ -1,19 +1,22 @@
 package trails;
 
 import java.awt.BorderLayout;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.examples.ExampleUtil;
+import jkanvas.util.Resource;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
+import trails.io.TripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
 import trails.particels.TrailRenderpass;
-import trails.routes.RandomTimeSlicer;
+import trails.routes.TripSlicer;
 
 /**
  * Starts the main project.
@@ -26,8 +29,9 @@ public class Main {
    * Starts the main application.
    * 
    * @param args No arguments.
+   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws IOException {
     final AnimatedPainter p = new AnimatedPainter() {
 
       private long time = 0;
@@ -53,7 +57,10 @@ public class Main {
 
     };
     final TrailRenderpass trails = new TrailRenderpass(p, 500, 500);
-    final TimeSlicer slicer = new RandomTimeSlicer();
+    final Resource origin = Resource.getFor("trip_data_1.csv.zip");
+    final Resource bin = new Resource(
+        (String) null, "trip_data_1.dat", (String) null, (String) null);
+    final TimeSlicer slicer = new TripSlicer(TripManager.getManager(bin, origin));
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);
 
     final Controller ctrl = new Controller(c);

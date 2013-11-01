@@ -29,12 +29,12 @@ public class CSVTripLoader {
     this.r = Objects.requireNonNull(r);
   }
 
-  public void loadTrips(final File out, final int off) throws IOException {
+  public void loadTrips(final File out, final long off) throws IOException {
     final Integer[] perm = getPermutation();
     final Trip t = new Trip();
     try (RandomAccessFile outFile = new RandomAccessFile(out, "rw")) {
       outFile.setLength(Trip.byteSize() * perm.length);
-      int rowNo = off;
+      long rowNo = off;
       final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       while(it.hasNext()) {
         final CSVRow row = it.next();
@@ -110,7 +110,7 @@ public class CSVTripLoader {
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    l.loadTrips(dump.directFile(), 0);
+    l.loadTrips(dump.directFile(), 0L);
     System.out.println("finished!");
   }
 

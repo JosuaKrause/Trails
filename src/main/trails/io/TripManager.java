@@ -33,7 +33,7 @@ public class TripManager implements AutoCloseable {
     public TripBlock(final long from, final long size) throws IOException {
       offset = from;
       this.size = (int) Math.min(size, blockSize);
-      trips = (int) (size / blockSize);
+      trips = (int) (this.size / Trip.byteSize());
       buffer = null;
     }
 
@@ -95,6 +95,7 @@ public class TripManager implements AutoCloseable {
       for(int i = 0; i < trips; ++i) {
         cur.read(buffer, i + offset);
         if(!cur.isValid()) {
+          System.err.println("invalid entry");
           continue;
         }
         final long time = cur.getPickupTime();
@@ -170,6 +171,16 @@ public class TripManager implements AutoCloseable {
     block.read(trip, index, inIndex);
   }
 
+  public long getStartTime() throws IOException {
+    if(blocks.size() <= 0) return -1L;
+    return blocks.get(0).getStartTime();
+  }
+
+  public long getEndTime() throws IOException {
+    if(blocks.size() <= 0) return -1L;
+    return blocks.get(blocks.size() - 1).getEndTime();
+  }
+
   @Override
   public void close() throws IOException {
     if(raf != null) {
@@ -177,6 +188,15 @@ public class TripManager implements AutoCloseable {
       raf.close();
       raf = null;
     }
+  }
+
+  public static TripManager getManager(final Resource bin, final Resource origin)
+      throws IOException {
+    if(!bin.hasContent()) {
+      final CSVTripLoader loader = new CSVTripLoader(origin);
+      loader.loadTrips(bin.directFile(), 0L);
+    }
+    return new TripManager(bin);
   }
 
 }
