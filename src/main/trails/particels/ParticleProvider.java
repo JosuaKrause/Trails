@@ -66,11 +66,21 @@ public final class ParticleProvider {
     /** Whether this particle is currently in use. */
     protected volatile boolean inUse;
 
+    /** Creates a path particle that is not in use. */
     public PathParticle() {
       super(Double.NaN, Double.NaN, Double.NaN);
       inUse = false;
     }
 
+    /**
+     * Activates this particle and starts a path.
+     * 
+     * @param startX The start x coordinate.
+     * @param startY The start y coordinate.
+     * @param end The end position.
+     * @param slices How many slices the particle needs for its trip.
+     * @param size The size of the particle.
+     */
     public void startPath(final double startX, final double startY,
         final Point2D end, final int slices, final double size) {
       final PathParticle thiz = this;
@@ -97,28 +107,60 @@ public final class ParticleProvider {
 
   } // PathParticle
 
+  /**
+   * Getter.
+   * 
+   * @return The animation tick.
+   */
   protected AnimationAction getTick() {
     return tick;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The render pass.
+   */
   protected TrailRenderpass getTrailRenderpass() {
     return trails;
   }
 
+  /** The interpolation. */
   private Interpolator interpolate = Interpolator.QUAD_IN_OUT;
 
+  /**
+   * Setter.
+   * 
+   * @param interpolate Sets the interpolation.
+   */
   public void setInterpolator(final Interpolator interpolate) {
     this.interpolate = Objects.requireNonNull(interpolate);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The interpolation.
+   */
   public Interpolator getInterpolator() {
     return interpolate;
   }
 
+  /**
+   * Constructs the timing for the number of slices.
+   * 
+   * @param slices The number of slices.
+   * @return The animation timing for the given number of slices.
+   */
   protected AnimationTiming getFor(final int slices) {
     return new AnimationTiming(interpolate, slices * sliceTime);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return An unused particle.
+   */
   private PathParticle getUnusedParticle() {
     final PathParticle p = unused.poll();
     if(p != null) return p;
@@ -127,8 +169,10 @@ public final class ParticleProvider {
     return n;
   }
 
+  /** The maximal number of particles to blean. */
   private final int cleanLimit = 1000;
 
+  /** Clean up unused particles. */
   protected void cleanUpUnused() {
     int i = 0;
     Particle p;
@@ -141,15 +185,34 @@ public final class ParticleProvider {
     System.out.println("cleaned " + i + " particles");
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The time of one slice.
+   */
   public long getSliceTime() {
     return sliceTime;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param sliceTime The time of one slice.
+   */
   public void setSliceTime(final long sliceTime) {
-    if(sliceTime <= 0) throw new IllegalArgumentException("" + sliceTime);
+    if(sliceTime <= 1000) throw new IllegalArgumentException("" + sliceTime);
     this.sliceTime = sliceTime;
   }
 
+  /**
+   * Start a path.
+   * 
+   * @param startX The x coordinate.
+   * @param startY The y coordinate.
+   * @param end The end position.
+   * @param slices How many slices this trip takes.
+   * @param size The size of the particle.
+   */
   public void startPath(final double startX, final double startY,
       final Point2D end, final int slices, final double size) {
     Objects.requireNonNull(end);

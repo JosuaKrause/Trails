@@ -18,9 +18,9 @@ import jkanvas.util.Resource;
 public class TripManager implements AutoCloseable {
 
   /** Enforces sorting of the file. */
-  private static final boolean ENFORCE_SORT = true;
+  private static final boolean ENFORCE_SORT = false;
   /** Enforces to scan all records when searching. */
-  protected static final boolean SCAN_ALL = false;
+  protected static final boolean SCAN_ALL = true;
   /** How many trips a block has. */
   protected static int blockTrips = 10000;
 
