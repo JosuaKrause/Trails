@@ -18,9 +18,12 @@ public class TripSlicer implements TimeSlicer {
 
   private long curTime;
 
+  private long curIndex;
+
   public TripSlicer(final TripManager mng) throws IOException {
     this.mng = Objects.requireNonNull(mng);
     curTime = mng.getStartTime();
+    curIndex = 0L;
   }
 
   public long getTimeSlice() {
@@ -57,7 +60,7 @@ public class TripSlicer implements TimeSlicer {
       int no;
       do {
         final long curEnd = curTime + timeSlice - 1L;
-        final List<Trip> list = mng.read(curTime, curEnd);
+        final List<Trip> list = mng.read(curIndex, curTime, curEnd);
         for(final Trip t : list) {
           final int slices = (int) ((t.getDropoffTime() - curTime) / timeSlice) + 1;
           final double startX = getX(t.getPickupLon(), width);
@@ -67,13 +70,17 @@ public class TripSlicer implements TimeSlicer {
           provider.startPath(startX, startY,
               new Point2D.Double(endX, endY), slices, 2.0);
         }
+        no = list.size();
         final long end = mng.getEndTime();
         curTime = curEnd + 1L;
+        if(no != 0) {
+          curIndex = list.get(list.size() - 1).getIndex() + 1L;
+        }
         if(curTime > end) {
           curTime = mng.getStartTime();
+          curIndex = 0L;
           System.out.println("full cycle!");
         }
-        no = list.size();
         System.out.println("trips: " + no);
       } while(SKIP_GAPS && no == 0);
     } catch(final IOException io) {

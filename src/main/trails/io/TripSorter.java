@@ -142,20 +142,20 @@ public class TripSorter implements AutoCloseable {
   private void sortRange(final Trip tmpA, final Trip tmpB, final long from, final long to)
       throws IOException {
     System.out.println("sort " + from + " -- " + to);
-    if(from >= to - 1) return; // 1 or less elements
-    if(from == to - 2) { // 2 elements
-      if(cmp(tmpA, tmpB, from, from + 1) > 0) {
-        swap(tmpA, tmpB, from, from + 1);
+    if(from >= to - 1L) return; // 1 or less elements
+    if(from == to - 2L) { // 2 elements
+      if(cmp(tmpA, tmpB, from, from + 1L) > 0) {
+        swap(tmpA, tmpB, from, from + 1L);
       }
       return;
     }
     // more elements
     long pivot = from;
-    long cur = from + 1;
+    long cur = from + 1L;
     while(cur < to) {
       if(cmp(tmpA, tmpB, pivot, cur) > 0) {
-        if(pivot + 1 < cur) {
-          swap(tmpA, tmpB, pivot, pivot + 1); // move pivot
+        if(pivot + 1L < cur) {
+          swap(tmpA, tmpB, pivot, pivot + 1L); // move pivot
         }
         swap(tmpA, tmpB, pivot, cur); // put to the left
         ++pivot;
@@ -163,7 +163,7 @@ public class TripSorter implements AutoCloseable {
       ++cur;
     }
     sortRange(tmpA, tmpB, from, pivot);
-    sortRange(tmpA, tmpB, pivot, to);
+    sortRange(tmpA, tmpB, pivot + 1L, to);
   }
 
   @Override

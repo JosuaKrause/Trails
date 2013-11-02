@@ -142,14 +142,20 @@ public class TripManager implements AutoCloseable {
      * Reads all entries of the block matching the criterias.
      * 
      * @param list The list to fill.
+     * @param startIndex The start index.
      * @param fromTime The inclusive lowest time that will be added.
      * @param toTime The inclusive highest time will be added.
      * @throws IOException I/O Exception.
      */
-    public void read(final List<Trip> list, final long fromTime, final long toTime)
+    public void read(final List<Trip> list, final long startIndex,
+        final long fromTime, final long toTime)
         throws IOException {
       ensureBuffer();
-      Trip.seek(buffer, offset, offset);
+      if(contains(startIndex)) {
+        Trip.seek(buffer, startIndex, offset);
+      } else {
+        Trip.seek(buffer, offset, offset);
+      }
       if(SCAN_ALL) {
         for(int i = 0; i < trips; ++i) {
           final Trip trip = new Trip();
@@ -232,17 +238,19 @@ public class TripManager implements AutoCloseable {
   /**
    * Reads all trips that lie in the given time span.
    * 
+   * @param startIndex The starting index.
    * @param fromTime The lowest inclusive time.
    * @param toTime The highest inclusive time.
    * @return The list containing the trips.
    * @throws IOException I/O Exception.
    */
-  public List<Trip> read(final long fromTime, final long toTime) throws IOException {
+  public List<Trip> read(final long startIndex, final long fromTime, final long toTime)
+      throws IOException {
     if(fromTime > toTime) throw new IllegalArgumentException(fromTime + " > " + toTime);
     if(SCAN_ALL) {
       final List<Trip> list = new ArrayList<>();
       for(final TripBlock block : blocks) {
-        block.read(list, fromTime, toTime);
+        block.read(list, -1L, fromTime, toTime);
       }
       return list;
     }
@@ -250,6 +258,9 @@ public class TripManager implements AutoCloseable {
     for(;;) {
       if(blockIndex >= blocks.size()) return Collections.emptyList();
       final TripBlock block = blocks.get(blockIndex);
+      if(block.contains(startIndex)) {
+        break;
+      }
       final long startTime = block.getStartTime();
       if(startTime >= fromTime) {
         break;
@@ -266,7 +277,7 @@ public class TripManager implements AutoCloseable {
       if(block.getStartTime() > toTime) {
         break;
       }
-      block.read(list, fromTime, toTime);
+      block.read(list, startIndex, fromTime, toTime);
       ++blockIndex;
     }
     return list;
