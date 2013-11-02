@@ -3,6 +3,8 @@ package trails.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Sorts trips. Note that the class is <em>not</em> thread safe and that when
@@ -150,20 +152,75 @@ public class TripSorter implements AutoCloseable {
       return;
     }
     // more elements
-    long pivot = from;
-    long cur = from + 1L;
-    while(cur < to) {
-      if(cmp(tmpA, tmpB, pivot, cur) > 0) {
-        if(pivot + 1L < cur) {
-          swap(tmpA, tmpB, pivot, pivot + 1L); // move pivot
-        }
-        swap(tmpA, tmpB, pivot, cur); // put to the left
-        ++pivot;
-      }
-      ++cur;
-    }
+    long pivot = from + (to - from) / 2;
     sortRange(tmpA, tmpB, from, pivot);
-    sortRange(tmpA, tmpB, pivot + 1L, to);
+    sortRange(tmpA, tmpB, pivot, to);
+    long left = from;
+    while(left < pivot && pivot < to) {
+      if(cmp(tmpA, tmpB, left, pivot) > 0) {
+        long right = pivot + 1L;
+        range: while(right < to) {
+          if(cmp(tmpA, tmpB, left, right) <= 0) {
+            break range;
+          }
+          ++right;
+        }
+        insertBefore(left, pivot, right);
+        pivot = right;
+      }
+      ++left;
+    }
+  }
+
+  /** The maximum amount of trips in memory. */
+  private static long MAX_IN_MEMORY = 100000;
+
+  /**
+   * Inserts the given range before the given index.
+   * 
+   * @param insert The index to insert before.
+   * @param left The left index inclusive of the range.
+   * @param right The right index exclusive of the range.
+   * @throws IOException I/O Exception.
+   */
+  private void insertBefore(final long insert, final long left, final long right)
+      throws IOException {
+    long a = insert;
+    long l = left;
+    final long r = right;
+    while(r - l > MAX_IN_MEMORY) {
+      final long pivot = l + MAX_IN_MEMORY;
+      insertBefore(a, l, pivot);
+      a += MAX_IN_MEMORY;
+      l = pivot;
+    }
+    final int size = (int) (r - l);
+    final List<Trip> trips = new ArrayList<>(size);
+    // scan range
+    Trip.seek(raf, l);
+    for(long i = l; i < r; ++i) {
+      final Trip t = new Trip();
+      t.read(raf, i);
+      trips.add(t);
+    }
+    // copy
+    final Trip tmp = new Trip();
+    long cur = r - 1;
+    while(cur - size >= a) {
+      final long old = cur - size;
+      Trip.seek(raf, old);
+      tmp.read(raf, old);
+      tmp.setIndex(cur);
+      tmp.write(raf);
+      --cur;
+    }
+    // write tmp
+    long pos = a;
+    for(final Trip t : trips) {
+      t.setIndex(pos);
+      t.write(raf);
+      ++pos;
+    }
   }
 
   @Override

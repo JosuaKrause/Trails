@@ -10,47 +10,85 @@ import trails.io.TripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
 
+/**
+ * Slices trips into time frames.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class TripSlicer implements TimeSlicer {
 
+  /** The underlying trip manager. */
   private final TripManager mng;
-
+  /** The size of the time slice. */
   private long timeSlice = 15L * 60L * 1000L; // 15min
-
+  /** The current time. */
   private long curTime;
-
+  /** The current index. */
   private long curIndex;
 
+  /**
+   * Creates a new trip slicer.
+   * 
+   * @param mng The trip manager.
+   * @throws IOException I/O Exception.
+   */
   public TripSlicer(final TripManager mng) throws IOException {
     this.mng = Objects.requireNonNull(mng);
     curTime = mng.getStartTime();
     curIndex = 0L;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The size of the time slice.
+   */
   public long getTimeSlice() {
     return timeSlice;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param timeSlice The size of the time slice.
+   */
   public void setTimeSlice(final long timeSlice) {
     if(timeSlice < 1000L) throw new IllegalArgumentException("" + timeSlice);
     this.timeSlice = timeSlice;
   }
 
+  /** The leftmost longitude coordinate. */
   private static double left = -74.099464;
-
+  /** The rightmost longitude coordinate. */
   private static double right = -73.760262;
-
+  /** The bottom latitude coordinate. */
   private static double bottom = 40.532589;
-
+  /** The top latitude coordinate. */
   private static double top = 40.862122;
 
+  /**
+   * Converts longitude into a x coordinate.
+   * 
+   * @param lon The longitude.
+   * @param width The display width.
+   * @return The x coordinate.
+   */
   private static double getX(final double lon, final int width) {
     return (lon - left) / (right - left) * width;
   }
 
+  /**
+   * Converts Latitude into a y coordinate.
+   * 
+   * @param lat The latitude.
+   * @param height The display height.
+   * @return The y coordinate.
+   */
   private static double getY(final double lat, final int height) {
     return (lat - top) / (bottom - top) * height;
   }
 
+  /** Whether to skip time slices with no trips. */
   private static final boolean SKIP_GAPS = true;
 
   @Override
