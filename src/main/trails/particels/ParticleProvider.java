@@ -26,6 +26,14 @@ public final class ParticleProvider {
   /** The duration of a slice. */
   private long sliceTime;
 
+  /**
+   * Creates a particle provider.
+   * 
+   * @param animator The animator.
+   * @param trails The render pass.
+   * @param slicer The slicer.
+   * @param sliceTime The time to display one slice.
+   */
   public ParticleProvider(final Animator animator, final TrailRenderpass trails,
       final TimeSlicer slicer, final long sliceTime) {
     Objects.requireNonNull(animator);
@@ -48,8 +56,14 @@ public final class ParticleProvider {
     animator.getAnimationList().scheduleAction(tick, AnimationTiming.NO_ANIMATION);
   }
 
+  /**
+   * A path particle.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
   private class PathParticle extends Particle {
 
+    /** Whether this particle is currently in use. */
     protected volatile boolean inUse;
 
     public PathParticle() {

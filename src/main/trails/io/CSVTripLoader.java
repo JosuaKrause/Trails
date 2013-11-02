@@ -15,16 +15,34 @@ import jkanvas.io.csv.CSVReader;
 import jkanvas.io.csv.CSVRow;
 import jkanvas.util.Resource;
 
+/**
+ * Loads trips from a csv file.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class CSVTripLoader {
 
+  /** The resource. */
   private final Resource r;
-
+  /** The CSV reader. */
   private final CSVReader reader = new CSVReader(',', '"', true, false, true);
 
+  /**
+   * Creates a CSV trip loader.
+   * 
+   * @param r The resource. Either a folder or a zip file.
+   */
   public CSVTripLoader(final Resource r) {
     this.r = Objects.requireNonNull(r);
   }
 
+  /**
+   * Loads the trips from the CSV file.
+   * 
+   * @param out The file to write the binary result to.
+   * @param off The offset in the output file.
+   * @throws IOException I/O Exception.
+   */
   public void loadTrips(final File out, final long off) throws IOException {
     final Trip t = new Trip();
     try (RandomAccessFile outFile = new RandomAccessFile(out, "rw")) {
@@ -54,6 +72,13 @@ public class CSVTripLoader {
     }
   }
 
+  /**
+   * Opens the file within the resource.
+   * 
+   * @param name The file to open.
+   * @return The CSV row iterator.
+   * @throws IOException I/O Exception.
+   */
   private Iterator<CSVRow> openFile(final String name) throws IOException {
     if(r.isZip()) {
       final ZipInputStream zip = new ZipInputStream(r.getURL().openStream());
@@ -80,7 +105,7 @@ public class CSVTripLoader {
   /**
    * Tests the CSV loader.
    * 
-   * @param args No args.
+   * @param args No arguments.
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
