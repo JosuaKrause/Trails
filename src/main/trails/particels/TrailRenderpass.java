@@ -8,12 +8,15 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.SwingUtilities;
+
 import jkanvas.KanvasContext;
 import jkanvas.animation.Animated;
 import jkanvas.animation.Animator;
 import jkanvas.painter.RenderpassAdapter;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.SnapshotList.Snapshot;
+import trails.Main;
 
 /**
  * Renders trails.
@@ -39,6 +42,8 @@ public class TrailRenderpass extends RenderpassAdapter {
   protected AtomicInteger ready;
   /** Whether the render pass is running. */
   protected volatile boolean running;
+  /** Whether the last redraw has been finished. */
+  protected volatile boolean finishedRedraw;
 
   /**
    * Creates a new trail render pass.
@@ -114,6 +119,20 @@ public class TrailRenderpass extends RenderpassAdapter {
   }
 
   /**
+   * Getter.
+   * 
+   * @return Whether the last redraw has been finished.
+   */
+  public boolean hasFinishedRedraw() {
+    return finishedRedraw;
+  }
+
+  /** Clears the finished redraw flag. */
+  public void ackFinishedRedraw() {
+    finishedRedraw = false;
+  }
+
+  /**
    * Fades the image.
    * 
    * @param g The image.
@@ -149,6 +168,23 @@ public class TrailRenderpass extends RenderpassAdapter {
       }
     }
     g.dispose();
+    if(!Main.VIDEO_MODE) {
+      finishedRedraw = true;
+      return;
+    }
+    if(Main.makeScreenshot) return;
+    SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        try {
+          Main.makeScreenshot();
+        } finally {
+          finishedRedraw = true;
+        }
+      }
+
+    });
   }
 
   @Override

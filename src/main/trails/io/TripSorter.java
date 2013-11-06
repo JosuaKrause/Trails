@@ -143,7 +143,6 @@ public class TripSorter implements AutoCloseable {
    */
   private void sortRange(final Trip tmpA, final Trip tmpB, final long from, final long to)
       throws IOException {
-    System.out.println("sort " + from + " -- " + to);
     if(from >= to - 1L) return; // 1 or less elements
     if(from == to - 2L) { // 2 elements
       if(cmp(tmpA, tmpB, from, from + 1L) > 0) {
@@ -155,6 +154,7 @@ public class TripSorter implements AutoCloseable {
     long pivot = from + (to - from) / 2;
     sortRange(tmpA, tmpB, from, pivot);
     sortRange(tmpA, tmpB, pivot, to);
+    System.out.println("sort " + from + " -- " + to);
     long left = from;
     while(left < pivot && pivot < to) {
       if(cmp(tmpA, tmpB, left, pivot) > 0) {
@@ -173,7 +173,7 @@ public class TripSorter implements AutoCloseable {
   }
 
   /** The maximum amount of trips in memory. */
-  private static long MAX_IN_MEMORY = 100000;
+  private static final long MAX_IN_MEMORY = 100000;
 
   /**
    * Inserts the given range before the given index.
@@ -194,6 +194,7 @@ public class TripSorter implements AutoCloseable {
       a += MAX_IN_MEMORY;
       l = pivot;
     }
+    System.out.println("move " + l + " -- " + r + " v " + a);
     final int size = (int) (r - l);
     final List<Trip> trips = new ArrayList<>(size);
     // scan range

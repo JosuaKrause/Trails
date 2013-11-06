@@ -20,7 +20,7 @@ public class TripSlicer implements TimeSlicer {
   /** The underlying trip manager. */
   private final TripManager mng;
   /** The size of the time slice. */
-  private long timeSlice = 15L * 60L * 1000L; // 15min
+  private long timeSlice = 5L * 60L * 1000L; // 5min
   /** The current time. */
   private long curTime;
   /** The current index. */
@@ -34,7 +34,8 @@ public class TripSlicer implements TimeSlicer {
    */
   public TripSlicer(final TripManager mng) throws IOException {
     this.mng = Objects.requireNonNull(mng);
-    curTime = mng.getStartTime();
+    // ignore first slice because of garbage
+    curTime = mng.getStartTime() + timeSlice;
     curIndex = 0L;
   }
 
