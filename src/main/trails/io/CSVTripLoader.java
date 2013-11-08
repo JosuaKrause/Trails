@@ -1,11 +1,9 @@
 package trails.io;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -39,13 +37,15 @@ public class CSVTripLoader {
   /**
    * Loads the trips from the CSV file.
    * 
-   * @param out The file to write the binary result to.
-   * @param off The offset in the output file.
+   * @param <T> The trip acceptor type.
+   * @param ta The acceptor.
+   * @param off The offset for row numbering.
    * @throws IOException I/O Exception.
    */
-  public void loadTrips(final File out, final long off) throws IOException {
+  public <T extends AutoCloseable> void loadTrips(
+      final TripAcceptor<T> ta, final long off) throws IOException {
     final Trip t = new Trip();
-    try (RandomAccessFile outFile = new RandomAccessFile(out, "rw")) {
+    try (T out = ta.beginSection()) {
       long rowNo = off;
       final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       while(it.hasNext()) {
@@ -64,11 +64,12 @@ public class CSVTripLoader {
           e.printStackTrace();
           t.setInvalid(rowNo);
         }
-        outFile.setLength(Math.max(Trip.byteSize() * rowNo, outFile.length()));
-        t.write(outFile);
+        ta.accept(out, t, rowNo);
         ++rowNo;
       }
       System.out.println(rowNo + " trips");
+    } catch(final Exception e) {
+      throw new IOException(e);
     }
   }
 
@@ -113,7 +114,7 @@ public class CSVTripLoader {
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    l.loadTrips(dump.directFile(), 0L);
+    l.loadTrips(new BinaryTripAcceptor(dump.directFile()), 0L);
     System.out.println("finished!");
   }
 

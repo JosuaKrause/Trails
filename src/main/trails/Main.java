@@ -16,7 +16,7 @@ import jkanvas.util.Screenshot;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
-import trails.io.TripManager;
+import trails.io.BinaryTripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
 import trails.particels.TrailRenderpass;
@@ -102,7 +102,7 @@ public class Main {
     final Resource origin = Resource.getFor("trip_data_1.csv.zip");
     final Resource bin = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    final TripManager mng = TripManager.getManager(bin, origin);
+    final BinaryTripManager mng = BinaryTripManager.getManager(bin, origin);
     final TimeSlicer slicer = new TripSlicer(mng);
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);

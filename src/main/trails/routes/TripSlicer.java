@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import trails.io.Trip;
+import trails.io.BinaryTripManager;
 import trails.io.TripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
@@ -32,7 +33,7 @@ public class TripSlicer implements TimeSlicer {
    * @param mng The trip manager.
    * @throws IOException I/O Exception.
    */
-  public TripSlicer(final TripManager mng) throws IOException {
+  public TripSlicer(final BinaryTripManager mng) throws IOException {
     this.mng = Objects.requireNonNull(mng);
     // ignore first slice because of garbage
     curTime = mng.getStartTime() + timeSlice;

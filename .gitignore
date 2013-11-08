@@ -5,3 +5,4 @@ target
 /pics/
 /*.csv.zip
 /*.dat
+/*.backup
