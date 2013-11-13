@@ -29,6 +29,8 @@ public class Trip {
   private double dLon;
   /** The drop-off time. */
   private long dTime;
+  /** The vehicle number. */
+  private long vehicle;
 
   /** Creates an invalid trip. */
   public Trip() {
@@ -99,7 +101,7 @@ public class Trip {
   }
 
   /**
-   * Setter.
+   * Setter. This method resets also the vehicle number.
    * 
    * @param index The index.
    * @param pickupLat The pickup latitude.
@@ -119,6 +121,7 @@ public class Trip {
     dLon = parseDouble(dropoffLon);
     pTime = parseDate(pickupTime);
     dTime = parseDate(dropoffTime);
+    vehicle = -1;
   }
 
   /**
@@ -142,6 +145,33 @@ public class Trip {
     this.dLat = dLat;
     this.dLon = dLon;
     this.dTime = dTime;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param vehicle The vehicle number.
+   */
+  public void setVehicle(final long vehicle) {
+    this.vehicle = vehicle;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The vehicle number.
+   */
+  public long getVehicle() {
+    return vehicle;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether this trip has a vehicle number.
+   */
+  public boolean hasVehicle() {
+    return vehicle >= 0;
   }
 
   /**

@@ -38,34 +38,23 @@ public class CSVTripLoader {
    * Loads the trips from the CSV file.
    * 
    * @param <T> The trip acceptor type.
+   * @param it The row iterator.
    * @param ta The acceptor.
+   * @param fmt The CSV format.
    * @param off The offset for row numbering.
    * @throws IOException I/O Exception.
    */
-  public <T extends AutoCloseable> void loadTrips(
-      final TripAcceptor<T> ta, final long off) throws IOException {
+  public static <T extends AutoCloseable> void loadTrips(final Iterator<CSVRow> it,
+      final TripAcceptor<T> ta, final CSVFormat fmt, final long off) throws IOException {
     final Trip t = new Trip();
     try (T out = ta.beginSection()) {
       long rowNo = off;
-      final Iterator<CSVRow> it = openFile("trip_data_1.csv");
       while(it.hasNext()) {
         final CSVRow row = it.next();
-        // read the trip
-        try {
-          t.set(rowNo,
-              row.get("pickup_latitude"),
-              row.get("pickup_longitude"),
-              row.get("pickup_datetime"),
-              row.get("dropoff_latitude"),
-              row.get("dropoff_longitude"),
-              row.get("dropoff_datetime"));
-        } catch(final IllegalArgumentException e) {
-          System.err.println("invalid row detected");
-          e.printStackTrace();
-          t.setInvalid(rowNo);
+        if(fmt.readTrip(t, row, rowNo)) {
+          ta.accept(out, t, rowNo);
+          ++rowNo;
         }
-        ta.accept(out, t, rowNo);
-        ++rowNo;
       }
       System.out.println(rowNo + " trips");
     } catch(final Exception e) {
@@ -80,7 +69,7 @@ public class CSVTripLoader {
    * @return The CSV row iterator.
    * @throws IOException I/O Exception.
    */
-  private Iterator<CSVRow> openFile(final String name) throws IOException {
+  public Iterator<CSVRow> openFile(final String name) throws IOException {
     if(r.isZip()) {
       final ZipInputStream zip = new ZipInputStream(r.getURL().openStream());
       boolean found = false;
@@ -114,7 +103,29 @@ public class CSVTripLoader {
     final CSVTripLoader l = new CSVTripLoader(Resource.getFor("trip_data_1.csv.zip"));
     final Resource dump = new Resource(
         (String) null, "trip_data_1.dat", (String) null, (String) null);
-    l.loadTrips(new BinaryTripAcceptor(dump.directFile()), 0L);
+    CSVTripLoader.loadTrips(
+        l.openFile("trip_data_1.csv"),
+        new BinaryTripAcceptor(dump.directFile()), new CSVFormat() {
+
+          @Override
+          public boolean readTrip(final Trip t, final CSVRow row, final long rowNo) {
+            try {
+              t.set(rowNo,
+                  row.get("pickup_latitude"),
+                  row.get("pickup_longitude"),
+                  row.get("pickup_datetime"),
+                  row.get("dropoff_latitude"),
+                  row.get("dropoff_longitude"),
+                  row.get("dropoff_datetime"));
+            } catch(final IllegalArgumentException e) {
+              System.err.println("invalid row detected");
+              e.printStackTrace();
+              t.setInvalid(rowNo);
+            }
+            return true;
+          }
+
+        }, 0L);
     System.out.println("finished!");
   }
 

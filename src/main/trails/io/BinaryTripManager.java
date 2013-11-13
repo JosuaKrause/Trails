@@ -319,14 +319,18 @@ public class BinaryTripManager implements TripManager {
    * 
    * @param bin The binary file.
    * @param origin The CSV file.
+   * @param fmt The CSV format.
    * @return The trip manager.
    * @throws IOException I/O Exception.
    */
-  public static BinaryTripManager getManager(final Resource bin, final Resource origin)
+  public static BinaryTripManager getManager(final Resource bin,
+      final Resource origin, final CSVFormat fmt)
       throws IOException {
     if(!bin.hasContent()) {
       final CSVTripLoader loader = new CSVTripLoader(origin);
-      loader.loadTrips(new BinaryTripAcceptor(bin.directFile()), 0L);
+      CSVTripLoader.loadTrips(
+          loader.openFile("trip_data_1.csv"),
+          new BinaryTripAcceptor(bin.directFile()), fmt, 0L);
     }
     if(ENFORCE_SORT) {
       try (TripSorter sorter = new TripSorter(bin.directFile())) {
