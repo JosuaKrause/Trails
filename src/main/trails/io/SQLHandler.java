@@ -244,14 +244,14 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     final Statement stmt = connection.createStatement();
     stmt.executeUpdate("DROP TABLE IF EXISTS trips");
     final String create = "CREATE TABLE IF NOT EXISTS trips ( "
-        + "start_time INTEGER PRIMARY KEY ASC, "
+        + "start_time INTEGER, "
         + "vehicle INTEGER, "
         + "end_time INTEGER, "
         + "start_lat REAL, "
         + "start_lon REAL, "
         + "end_lat REAL, "
-        + "end_lon REAL "
-        + ")";
+        + "end_lon REAL, "
+        + "PRIMARY KEY (start_time, vehicle))";
     stmt.executeUpdate(create);
     stmt.close();
     onChange();
