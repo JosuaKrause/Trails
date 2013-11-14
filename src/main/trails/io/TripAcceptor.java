@@ -28,4 +28,12 @@ public interface TripAcceptor<T extends AutoCloseable> {
    */
   void accept(T out, Trip t, long rowNo) throws IOException;
 
+  /**
+   * Removes the given vehicle.
+   * 
+   * @param vehicle The vehicle.
+   * @throws IOException I/O Exception.
+   */
+  void removeVehicle(long vehicle) throws IOException;
+
 }

@@ -66,7 +66,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     ensureConnection();
     final Statement statement = connection.createStatement();
     statement.setQueryTimeout(30);
-    System.out.println(query);
+    // System.out.println(query);
     return statement.executeQuery(query);
   }
 
@@ -255,6 +255,28 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     stmt.executeUpdate(create);
     stmt.close();
     onChange();
+  }
+
+  /**
+   * Deletes all trips from the given vehicle.
+   * 
+   * @param vehicle The vehicle.
+   * @throws SQLException SQL-Exception.
+   */
+  public void deleteVehicle(final long vehicle) throws SQLException {
+    final Statement stmt = connection.createStatement();
+    stmt.executeUpdate("DELETE FROM trips WHERE vehicle = " + vehicle);
+    stmt.close();
+    onChange();
+  }
+
+  @Override
+  public void removeVehicle(final long vehicle) throws IOException {
+    try {
+      deleteVehicle(vehicle);
+    } catch(final SQLException e) {
+      throw new IOException(e);
+    }
   }
 
   @Override

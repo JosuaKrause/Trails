@@ -35,4 +35,9 @@ public class BinaryTripAcceptor implements TripAcceptor<RandomAccessFile> {
     t.write(outFile);
   }
 
+  @Override
+  public void removeVehicle(final long vehicle) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
 }
