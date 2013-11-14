@@ -6,3 +6,5 @@ target
 /*.csv.zip
 /*.dat
 /*.backup
+/gps_trips.db
+/gps_trips.db-journal
