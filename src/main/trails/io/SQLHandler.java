@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -154,7 +155,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
   static final class InsertStatement implements AutoCloseable {
 
     /** The statement. */
-    private final Statement stmt;
+    private final PreparedStatement stmt;
     /** The connection. */
     private final Connection conn;
 
@@ -166,7 +167,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
      */
     public InsertStatement(final Connection conn) throws SQLException {
       this.conn = conn;
-      stmt = conn.createStatement();
+      stmt = conn.prepareStatement("INSERT INTO trips VALUES(?, ?, ?, ?, ?, ?, ?)");
     }
 
     /** The vehicle number. */
@@ -188,15 +189,14 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
       } else {
         v = vehicle++;
       }
-      stmt.executeUpdate("INSERT INTO trips VALUES("
-          + t.getPickupTime() + ", "
-          + v + ", "
-          + t.getDropoffTime() + ", "
-          + t.getPickupLat() + ", "
-          + t.getPickupLon() + ", "
-          + t.getDropoffLat() + ", "
-          + t.getDropoffLon() + " "
-          + ")");
+      stmt.setLong(1, t.getPickupTime());
+      stmt.setLong(2, v);
+      stmt.setLong(3, t.getDropoffTime());
+      stmt.setDouble(4, t.getPickupLat());
+      stmt.setDouble(5, t.getPickupLon());
+      stmt.setDouble(6, t.getDropoffLat());
+      stmt.setDouble(7, t.getDropoffLon());
+      stmt.executeUpdate();
     }
 
     @Override
