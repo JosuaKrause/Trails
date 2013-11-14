@@ -70,6 +70,9 @@ public class SQLConverter {
     try (SQLHandler sq = new SQLHandler("gps_trips.db")) {
       if(startTrip < 0) {
         sq.truncateTable();
+        System.out.println("truncate table");
+      } else {
+        System.out.println("start at " + startTrip);
       }
       scanAll(root, new FileFilter() {
 

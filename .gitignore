@@ -8,3 +8,4 @@ target
 /*.backup
 /gps_trips.db
 /gps_trips.db-journal
+/converter_progress.txt

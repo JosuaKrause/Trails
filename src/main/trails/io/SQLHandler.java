@@ -265,7 +265,8 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    */
   public void deleteVehicle(final long vehicle) throws SQLException {
     final Statement stmt = connection.createStatement();
-    stmt.executeUpdate("DELETE FROM trips WHERE vehicle = " + vehicle);
+    final int num = stmt.executeUpdate("DELETE FROM trips WHERE vehicle = " + vehicle);
+    System.out.println(num + " rows deleted for vehicle = " + vehicle);
     stmt.close();
     onChange();
   }
