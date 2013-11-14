@@ -1,23 +1,17 @@
 package trails.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jkanvas.io.csv.CSVReader;
-import jkanvas.io.csv.CSVRow;
 import trails.io.SQLHandler.InsertStatement;
 
 /**
@@ -41,7 +35,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     Class.forName("org.sqlite.JDBC");
     // Table: trips
     // Columns: start_lat, start_lon, end_lat, end_lon,
-    // [start_time], end_time, [vehicle]
+    // [start_time], end_time, vehicle
     connection = DriverManager.getConnection("jdbc:sqlite:" + db);
     System.out.println(connection.getMetaData().getURL());
   }
@@ -49,6 +43,16 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
   /** Ensures that the connection is still open. */
   private void ensureConnection() {
     Objects.requireNonNull(connection);
+  }
+
+  /** Notifies changes to the database. */
+  private void onChange() {
+    startTime = -1L;
+    endTime = -1L;
+    minLat = Double.NaN;
+    maxLat = Double.NaN;
+    minLon = Double.NaN;
+    maxLon = Double.NaN;
   }
 
   /**
@@ -62,14 +66,46 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     ensureConnection();
     final Statement statement = connection.createStatement();
     statement.setQueryTimeout(30);
+    System.out.println(query);
     return statement.executeQuery(query);
   }
+
+  /** Whether to use the simple range query. */
+  private static final boolean EASY_QUERY = true;
 
   @Override
   public List<Trip> read(final long startIndex, final long fromTime, final long toTime)
       throws IOException {
-    final String q = "SELECT * FROM trips WHERE start_time >= "
-        + fromTime + " AND start_time < " + toTime;
+    if(EASY_QUERY) {
+      final String query = "SELECT * FROM trips "
+          + "WHERE start_time >= " + fromTime + " AND start_time < " + toTime;
+      try {
+        final ResultSet res = query(query);
+        final List<Trip> list = new ArrayList<>();
+        while(res.next()) {
+          final Trip t = new Trip();
+          t.set(-1, res.getDouble("start_lat"), res.getDouble("start_lon"),
+              res.getLong("start_time"), res.getDouble("end_lat"),
+              res.getDouble("end_lon"), res.getLong("end_time"));
+          t.setVehicle(res.getLong("vehicle"));
+          list.add(t);
+        }
+        res.close();
+        return list;
+      } catch(final SQLException e) {
+        throw new IOException(e);
+      }
+    }
+    final String where = "start_time >= " + fromTime + " AND start_time < " + toTime;
+    final String start = "SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon "
+        + "FROM trips WHERE " + where + " GROUP BY vehicle";
+    final String end = "SELECT MAX(end_time) AS end_time, vehicle, end_lat, end_lon "
+        + "FROM trips WHERE " + where + " GROUP BY vehicle";
+    final String q = "SELECT start.start_time AS start_time, start.vehicle AS vehicle, "
+        + "start.start_lat AS start_lat, start.start_lon AS start_lon, "
+        + "end.end_time AS end_time, end.end_lat AS end_lat, end.end_lon AS end_lon "
+        + "FROM (" + start + ") AS start, (" + end
+        + ") AS end WHERE start.vehicle = end.vehicle";
     try {
       final ResultSet res = query(q);
       final List<Trip> list = new ArrayList<>();
@@ -88,32 +124,115 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     }
   }
 
+  /** The cached start time. */
+  private long startTime = -1L;
+
   @Override
   public long getStartTime() throws IOException {
+    if(startTime < 0) {
+      try {
+        final ResultSet res = query("SELECT MIN(start_time) AS start_time FROM trips");
+        if(!res.next()) throw new IOException("no records");
+        final long startTime = res.getLong("start_time");
+        if(res.next()) throw new IOException("too much records");
+        res.close();
+        this.startTime = startTime;
+      } catch(final SQLException e) {
+        throw new IOException(e);
+      }
+    }
+    return startTime;
+  }
+
+  /** The cached end time. */
+  private long endTime = -1L;
+
+  @Override
+  public long getEndTime() throws IOException {
+    if(endTime < 0) {
+      try {
+        final ResultSet res = query("SELECT MAX(end_time) AS end_time FROM trips");
+        if(!res.next()) throw new IOException("no records");
+        final long endTime = res.getLong("end_time");
+        if(res.next()) throw new IOException("too much records");
+        res.close();
+        this.endTime = endTime;
+      } catch(final SQLException e) {
+        throw new IOException(e);
+      }
+    }
+    return endTime;
+  }
+
+  /**
+   * Gets a single aggregated value.
+   * 
+   * @param aggregate The aggregation function.
+   * @param name The name of the column.
+   * @return The value.
+   * @throws IOException I/O Exception.
+   */
+  private double getValue(final String aggregate, final String name) throws IOException {
     try {
-      final ResultSet res = query("SELECT MIN(start_time) AS start_time FROM trips");
+      final ResultSet res = query(
+          "SELECT " + aggregate + "(" + name + ") AS " + name + " FROM trips");
       if(!res.next()) throw new IOException("no records");
-      final long startTime = res.getLong("start_time");
+      final double val = res.getDouble(name);
       if(res.next()) throw new IOException("too much records");
       res.close();
-      return startTime;
+      return val;
     } catch(final SQLException e) {
       throw new IOException(e);
     }
   }
 
+  /** The cached minimal latitude. */
+  private double minLat = Double.NaN;
+  /** The cached maximal latitude. */
+  private double maxLat = Double.NaN;
+  /** The cached minimal longitude. */
+  private double minLon = Double.NaN;
+  /** The cached maximal longitude. */
+  private double maxLon = Double.NaN;
+
   @Override
-  public long getEndTime() throws IOException {
-    try {
-      final ResultSet res = query("SELECT MAX(end_time) AS end_time FROM trips");
-      if(!res.next()) throw new IOException("no records");
-      final long endTime = res.getLong("end_time");
-      if(res.next()) throw new IOException("too much records");
-      res.close();
-      return endTime;
-    } catch(final SQLException e) {
-      throw new IOException(e);
+  public double getMinLat() throws IOException {
+    if(Double.isNaN(minLat)) {
+      final double sLat = getValue("MIN", "start_lat");
+      final double eLat = getValue("MIN", "end_lat");
+      minLat = Math.min(sLat, eLat);
     }
+    return minLat;
+  }
+
+  @Override
+  public double getMaxLat() throws IOException {
+    if(Double.isNaN(maxLat)) {
+      final double sLat = getValue("MAX", "start_lat");
+      final double eLat = getValue("MAX", "end_lat");
+      maxLat = Math.max(sLat, eLat);
+    }
+    return maxLat;
+  }
+
+  @Override
+  public double getMinLon() throws IOException {
+    if(Double.isNaN(minLon)) {
+      final double sLon = getValue("MIN", "start_lon");
+      final double eLon = getValue("MIN", "end_lon");
+      minLon = Math.min(sLon, eLon);
+    }
+    return minLon;
+  }
+
+  @Override
+  public double getMaxLon() throws IOException {
+    if(Double.isNaN(maxLon)) {
+      final double sLon = getValue("MAX", "start_lon");
+      final double eLon = getValue("MAX", "end_lon");
+      maxLon = Math.max(sLon, eLon);
+    }
+    return maxLon;
   }
 
   /**
@@ -135,6 +254,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
         + ")";
     stmt.executeUpdate(create);
     stmt.close();
+    onChange();
   }
 
   @Override
@@ -216,6 +336,8 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
       out.insert(t);
     } catch(final SQLException e) {
       throw new IOException(e);
+    } finally {
+      onChange();
     }
   }
 
@@ -227,15 +349,6 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     }
   }
 
-  /** The minimal latitude. */
-  static double minLat = Double.NaN;
-  /** The maximal latitude. */
-  static double maxLat = Double.NaN;
-  /** The minimal longitude. */
-  static double minLon = Double.NaN;
-  /** The maximal longitude. */
-  static double maxLon = Double.NaN;
-
   /**
    * Fills the database with GPS trips.
    * 
@@ -243,101 +356,37 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    * @throws Exception Exception.
    */
   public static void main(final String[] args) throws Exception {
-    if(args.length != 1) {
-      System.err.println("need path");
-      return;
-    }
-    final File root = new File(args[0]);
     try (SQLHandler sq = new SQLHandler("gps_trips.db")) {
-      sq.truncateTable();
-      scanAll(root, new FileFilter() {
-
-        @Override
-        public boolean accept(final File f) {
-          return f.isDirectory() || f.getName().endsWith(".plt");
-        }
-
-      }, sq, 0L);
-    } finally {
-      System.out.println("Lat " + minLat + " -- " + maxLat);
-      System.out.println("Lon " + minLon + " -- " + maxLon);
+      System.out.println(print(sq.query("SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle")));
+      System.out.println(print(sq.query("SELECT MAX(end_time) AS end_time, vehicle, end_lat, end_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle")));
+      System.out.println(print(sq.query("SELECT start.start_time AS start_time, start.vehicle AS vehicle, start.start_lat AS start_lat, start.start_lon AS start_lon, end.end_time AS end_time, end.end_lat AS end_lat, end.end_lon AS end_lon FROM (SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle) AS start, (SELECT MAX(end_time) AS end_time, vehicle, end_lat, end_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle) AS end WHERE start.vehicle = end.vehicle")));
     }
   }
 
   /**
-   * Scans the file-system and adds all trips.
+   * Computes a somewhat pretty result string.
    * 
-   * @param root The root file.
-   * @param filter The file filter.
-   * @param accept The acceptor.
-   * @param tripNo The current trip number.
-   * @return The trip number after completion.
-   * @throws IOException I/O Exception.
+   * @param res The result set.
+   * @return The string.
+   * @throws Exception Exception.
    */
-  private static long scanAll(final File root, final FileFilter filter,
-      final TripAcceptor<InsertStatement> accept, final long tripNo) throws IOException {
-    long trip = tripNo;
-    for(final File folder : root.listFiles(filter)) {
-      if(folder.isDirectory()) {
-        trip = scanAll(folder, filter, accept, trip);
-        continue;
-      }
-      System.out.println(folder.getAbsolutePath());
-      try (LineNumberReader r =
-          new LineNumberReader(new BufferedReader(new FileReader(folder)))) {
-        for(int i = 0; i < 6; ++i) {
-          r.readLine();
-        }
-        final long curTrip = trip;
-        CSVTripLoader.loadTrips(
-            CSVReader.readRows(r, new CSVReader(',', '"', false, false, true)),
-            accept, new CSVFormat() {
-
-              private boolean valid = false;
-
-              private double lastLat;
-
-              private double lastLon;
-
-              private long lastTime;
-
-              @Override
-              public boolean readTrip(final Trip t, final CSVRow row, final long rowNo) {
-                final double curLat = Double.parseDouble(row.get(0));
-                if(Double.isNaN(maxLat) || curLat > maxLat) {
-                  maxLat = curLat;
-                }
-                if(Double.isNaN(minLat) || curLat < minLat) {
-                  minLat = curLat;
-                }
-                final double curLon = Double.parseDouble(row.get(1));
-                if(Double.isNaN(maxLon) || curLon > maxLon) {
-                  maxLon = curLon;
-                }
-                if(Double.isNaN(minLon) || curLon < minLon) {
-                  minLon = curLon;
-                }
-                final long curTime = (long) (Double.parseDouble(row.get(4)) * 24 * 60 * 60 * 1000);
-                if(!valid) {
-                  lastLat = curLat;
-                  lastLon = curLon;
-                  lastTime = curTime;
-                } else {
-                  t.set(rowNo, lastLat, lastLon, lastTime, curLat, curLon, curTime);
-                  t.setVehicle(curTrip);
-                }
-                valid = !valid;
-                return !valid;
-              }
-
-            }, 0L);
-        ++trip;
-        System.out.println("trip " + trip);
-        System.out.println("Lat " + minLat + " -- " + maxLat);
-        System.out.println("Lon " + minLon + " -- " + maxLon);
-      }
+  private static String print(final ResultSet res) throws Exception {
+    final StringBuilder sb = new StringBuilder();
+    final ResultSetMetaData md = res.getMetaData();
+    for(int i = 0; i < md.getColumnCount(); ++i) {
+      sb.append(' ');
+      sb.append(md.getColumnName(i + 1));
+      sb.append(" |");
     }
-    return trip;
+    sb.append('\n');
+    while(res.next()) {
+      for(int i = 0; i < md.getColumnCount(); ++i) {
+        sb.append(' ');
+        sb.append(res.getString(i + 1));
+        sb.append(" |");
+      }
+      sb.append('\n');
+    }
+    return sb.toString();
   }
-
 }

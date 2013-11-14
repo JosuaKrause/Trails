@@ -37,6 +37,14 @@ public class TripSlicer implements TimeSlicer {
     // ignore first slice because of garbage
     curTime = mng.getStartTime() + timeSlice;
     curIndex = 0L;
+    final double l = mng.getMinLon();
+    left = Double.isNaN(l) ? -74.099464 : l;
+    final double r = mng.getMaxLon();
+    right = Double.isNaN(r) ? -73.760262 : r;
+    final double b = mng.getMinLat();
+    bottom = Double.isNaN(b) ? 40.532589 : b;
+    final double t = mng.getMaxLat();
+    top = Double.isNaN(t) ? 40.862122 : t;
   }
 
   /**
@@ -59,13 +67,13 @@ public class TripSlicer implements TimeSlicer {
   }
 
   /** The leftmost longitude coordinate. */
-  private static double left = 116.285446;// -74.099464;
+  private final double left;
   /** The rightmost longitude coordinate. */
-  private static double right = 116.394204;// -73.760262;
+  private final double right;
   /** The bottom latitude coordinate. */
-  private static double bottom = 39.887104;// 40.532589;
+  private final double bottom;
   /** The top latitude coordinate. */
-  private static double top = 40.015903;// 40.862122;
+  private final double top;
 
   /**
    * Converts longitude into a x coordinate.
@@ -74,7 +82,7 @@ public class TripSlicer implements TimeSlicer {
    * @param width The display width.
    * @return The x coordinate.
    */
-  private static double getX(final double lon, final int width) {
+  private double getX(final double lon, final int width) {
     return (lon - left) / (right - left) * width;
   }
 
@@ -85,7 +93,7 @@ public class TripSlicer implements TimeSlicer {
    * @param height The display height.
    * @return The y coordinate.
    */
-  private static double getY(final double lat, final int height) {
+  private double getY(final double lat, final int height) {
     return (lat - top) / (bottom - top) * height;
   }
 

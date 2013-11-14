@@ -305,6 +305,26 @@ public class BinaryTripManager implements TripManager {
   }
 
   @Override
+  public double getMinLat() throws IOException {
+    return Double.NaN;
+  }
+
+  @Override
+  public double getMaxLat() throws IOException {
+    return Double.NaN;
+  }
+
+  @Override
+  public double getMinLon() throws IOException {
+    return Double.NaN;
+  }
+
+  @Override
+  public double getMaxLon() throws IOException {
+    return Double.NaN;
+  }
+
+  @Override
   public void close() throws IOException {
     if(raf != null) {
       fc.close();

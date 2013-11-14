@@ -37,4 +37,40 @@ public interface TripManager extends AutoCloseable {
    */
   long getEndTime() throws IOException;
 
+  /**
+   * Getter.
+   * 
+   * @return The smallest latitude or <code>NaN</code> if standard values should
+   *         be used.
+   * @throws IOException I/O Exception.
+   */
+  double getMinLat() throws IOException;
+
+  /**
+   * Getter.
+   * 
+   * @return The largest latitude or <code>NaN</code> if standard values should
+   *         be used.
+   * @throws IOException I/O Exception.
+   */
+  double getMaxLat() throws IOException;
+
+  /**
+   * Getter.
+   * 
+   * @return The smallest longitude or <code>NaN</code> if standard values
+   *         should be used.
+   * @throws IOException I/O Exception.
+   */
+  double getMinLon() throws IOException;
+
+  /**
+   * Getter.
+   * 
+   * @return The largest longitude or <code>NaN</code> if standard values should
+   *         be used.
+   * @throws IOException I/O Exception.
+   */
+  double getMaxLon() throws IOException;
+
 }
