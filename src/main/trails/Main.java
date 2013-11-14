@@ -10,16 +10,13 @@ import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.examples.ExampleUtil;
-import jkanvas.io.csv.CSVRow;
 import jkanvas.painter.SimpleTextHUD;
-import jkanvas.util.Resource;
 import jkanvas.util.Screenshot;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
-import trails.io.BinaryTripManager;
-import trails.io.CSVFormat;
-import trails.io.Trip;
+import trails.io.SQLHandler;
+import trails.io.TripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
 import trails.particels.TrailRenderpass;
@@ -74,9 +71,9 @@ public class Main {
    * Starts the main application.
    * 
    * @param args No arguments.
-   * @throws IOException I/O Exception.
+   * @throws Exception Exception.
    */
-  public static void main(final String[] args) throws IOException {
+  public static void main(final String[] args) throws Exception {
     final AnimatedPainter p = new AnimatedPainter() {
 
       @Override
@@ -102,31 +99,7 @@ public class Main {
 
     };
     trails = new TrailRenderpass(p, 500, 500);
-    final Resource origin = Resource.getFor("trip_data_1.csv.zip");
-    final Resource bin = new Resource(
-        (String) null, "trip_data_1.dat", (String) null, (String) null);
-    final BinaryTripManager mng = BinaryTripManager.getManager(bin, origin,
-        new CSVFormat() {
-
-          @Override
-          public boolean readTrip(final Trip t, final CSVRow row, final long rowNo) {
-            try {
-              t.set(rowNo,
-                  row.get("pickup_latitude"),
-                  row.get("pickup_longitude"),
-                  row.get("pickup_datetime"),
-                  row.get("dropoff_latitude"),
-                  row.get("dropoff_longitude"),
-                  row.get("dropoff_datetime"));
-            } catch(final IllegalArgumentException e) {
-              System.err.println("invalid row detected");
-              e.printStackTrace();
-              t.setInvalid(rowNo);
-            }
-            return true;
-          }
-
-        });
+    final TripManager mng = new SQLHandler("gps_trips.db");
     final TimeSlicer slicer = new TripSlicer(mng);
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);

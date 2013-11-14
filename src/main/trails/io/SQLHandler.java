@@ -19,10 +19,23 @@ import jkanvas.io.csv.CSVReader;
 import jkanvas.io.csv.CSVRow;
 import trails.io.SQLHandler.InsertStatement;
 
+/**
+ * Handles inserting and reading for the database.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
 
+  /** The connection or <code>null</code> if already closed. */
   private Connection connection;
 
+  /**
+   * Creates a new database handler.
+   * 
+   * @param db The database name.
+   * @throws SQLException SQL Exception.
+   * @throws ClassNotFoundException When the database engine is not installed.
+   */
   public SQLHandler(final String db) throws SQLException, ClassNotFoundException {
     Class.forName("org.sqlite.JDBC");
     // Table: trips
@@ -32,10 +45,18 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     System.out.println(connection.getMetaData().getURL());
   }
 
+  /** Ensures that the connection is still open. */
   private void ensureConnection() {
     Objects.requireNonNull(connection);
   }
 
+  /**
+   * Queries the database.
+   * 
+   * @param query The query.
+   * @return The result of the query.
+   * @throws SQLException SQL Exception.
+   */
   private ResultSet query(final String query) throws SQLException {
     ensureConnection();
     final Statement statement = connection.createStatement();
@@ -94,6 +115,11 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     }
   }
 
+  /**
+   * Truncates the table.
+   * 
+   * @throws SQLException SQL Exception.
+   */
   public void truncateTable() throws SQLException {
     final Statement stmt = connection.createStatement();
     stmt.executeUpdate("DROP TABLE IF EXISTS trips");
@@ -114,22 +140,44 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
   public InsertStatement beginSection() throws IOException {
     ensureConnection();
     try {
-      return new InsertStatement(connection.createStatement());
+      return new InsertStatement(connection);
     } catch(final SQLException e) {
       throw new IOException(e);
     }
   }
 
+  /**
+   * Can insert trips to the database.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
   static final class InsertStatement implements AutoCloseable {
 
+    /** The statement. */
     private final Statement stmt;
+    /** The connection. */
+    private final Connection conn;
 
-    public InsertStatement(final Statement stmt) {
-      this.stmt = stmt;
+    /**
+     * Enables to insert to the database.
+     * 
+     * @param conn The connection.
+     * @throws SQLException SQL Exception.
+     */
+    public InsertStatement(final Connection conn) throws SQLException {
+      this.conn = conn;
+      stmt = conn.createStatement();
     }
 
+    /** The vehicle number. */
     private long vehicle = 0;
 
+    /**
+     * Inserts the given trip.
+     * 
+     * @param t The trip.
+     * @throws SQLException SQL Exception.
+     */
     public void insert(final Trip t) throws SQLException {
       long v;
       if(t.hasVehicle()) {
@@ -149,12 +197,14 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
           + t.getDropoffLat() + ", "
           + t.getDropoffLon() + " "
           + ")");
-      System.out.println("trip " + t.getIndex() + " : " + v);
     }
 
     @Override
     public void close() throws Exception {
       stmt.close();
+      if(!conn.getAutoCommit()) {
+        conn.commit();
+      }
     }
 
   } // InsertStatement
@@ -177,11 +227,21 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     }
   }
 
+  /** The minimal latitude. */
   static double minLat = Double.NaN;
+  /** The maximal latitude. */
   static double maxLat = Double.NaN;
+  /** The minimal longitude. */
   static double minLon = Double.NaN;
+  /** The maximal longitude. */
   static double maxLon = Double.NaN;
 
+  /**
+   * Fills the database with GPS trips.
+   * 
+   * @param args The path to the trips.
+   * @throws Exception Exception.
+   */
   public static void main(final String[] args) throws Exception {
     if(args.length != 1) {
       System.err.println("need path");
@@ -190,25 +250,36 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
     final File root = new File(args[0]);
     try (SQLHandler sq = new SQLHandler("gps_trips.db")) {
       sq.truncateTable();
-      scanAll(root, ".plt", sq, 0L);
+      scanAll(root, new FileFilter() {
+
+        @Override
+        public boolean accept(final File f) {
+          return f.isDirectory() || f.getName().endsWith(".plt");
+        }
+
+      }, sq, 0L);
+    } finally {
       System.out.println("Lat " + minLat + " -- " + maxLat);
       System.out.println("Lon " + minLon + " -- " + maxLon);
     }
   }
 
-  private static long scanAll(final File root, final String suffix,
+  /**
+   * Scans the file-system and adds all trips.
+   * 
+   * @param root The root file.
+   * @param filter The file filter.
+   * @param accept The acceptor.
+   * @param tripNo The current trip number.
+   * @return The trip number after completion.
+   * @throws IOException I/O Exception.
+   */
+  private static long scanAll(final File root, final FileFilter filter,
       final TripAcceptor<InsertStatement> accept, final long tripNo) throws IOException {
     long trip = tripNo;
-    for(final File folder : root.listFiles(new FileFilter() {
-
-      @Override
-      public boolean accept(final File f) {
-        return f.isDirectory() || f.getName().endsWith(suffix);
-      }
-
-    })) {
+    for(final File folder : root.listFiles(filter)) {
       if(folder.isDirectory()) {
-        trip = scanAll(folder, suffix, accept, trip);
+        trip = scanAll(folder, filter, accept, trip);
         continue;
       }
       System.out.println(folder.getAbsolutePath());
@@ -236,14 +307,14 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
                 if(Double.isNaN(maxLat) || curLat > maxLat) {
                   maxLat = curLat;
                 }
-                if(Double.isNaN(minLat) || curLat > minLat) {
+                if(Double.isNaN(minLat) || curLat < minLat) {
                   minLat = curLat;
                 }
                 final double curLon = Double.parseDouble(row.get(1));
                 if(Double.isNaN(maxLon) || curLon > maxLon) {
                   maxLon = curLon;
                 }
-                if(Double.isNaN(minLon) || curLon > minLon) {
+                if(Double.isNaN(minLon) || curLon < minLon) {
                   minLon = curLon;
                 }
                 final long curTime = (long) (Double.parseDouble(row.get(4)) * 24 * 60 * 60 * 1000);
@@ -261,6 +332,9 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
 
             }, 0L);
         ++trip;
+        System.out.println("trip " + trip);
+        System.out.println("Lat " + minLat + " -- " + maxLat);
+        System.out.println("Lon " + minLon + " -- " + maxLon);
       }
     }
     return trip;

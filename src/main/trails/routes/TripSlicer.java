@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import trails.io.Trip;
-import trails.io.BinaryTripManager;
 import trails.io.TripManager;
 import trails.particels.ParticleProvider;
 import trails.particels.TimeSlicer;
@@ -33,7 +32,7 @@ public class TripSlicer implements TimeSlicer {
    * @param mng The trip manager.
    * @throws IOException I/O Exception.
    */
-  public TripSlicer(final BinaryTripManager mng) throws IOException {
+  public TripSlicer(final TripManager mng) throws IOException {
     this.mng = Objects.requireNonNull(mng);
     // ignore first slice because of garbage
     curTime = mng.getStartTime() + timeSlice;
@@ -60,13 +59,13 @@ public class TripSlicer implements TimeSlicer {
   }
 
   /** The leftmost longitude coordinate. */
-  private static double left = -74.099464;
+  private static double left = 116.285446;// -74.099464;
   /** The rightmost longitude coordinate. */
-  private static double right = -73.760262;
+  private static double right = 116.394204;// -73.760262;
   /** The bottom latitude coordinate. */
-  private static double bottom = 40.532589;
+  private static double bottom = 39.887104;// 40.532589;
   /** The top latitude coordinate. */
-  private static double top = 40.862122;
+  private static double top = 40.015903;// 40.862122;
 
   /**
    * Converts longitude into a x coordinate.
