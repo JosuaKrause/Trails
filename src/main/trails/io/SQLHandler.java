@@ -251,7 +251,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
         + "start_lon REAL, "
         + "end_lat REAL, "
         + "end_lon REAL, "
-        + "PRIMARY KEY (start_time, vehicle))";
+        + "PRIMARY KEY (start_time, vehicle) ON CONFLICT REPLACE)";
     stmt.executeUpdate(create);
     stmt.close();
     onChange();
