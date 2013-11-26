@@ -11,10 +11,12 @@ import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.examples.ExampleUtil;
 import jkanvas.painter.SimpleTextHUD;
+import jkanvas.util.Resource;
 import jkanvas.util.Screenshot;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
+import trails.io.BinaryTripManager;
 import trails.io.SQLHandler;
 import trails.io.TripManager;
 import trails.particels.ParticleProvider;
@@ -29,6 +31,8 @@ import trails.routes.TripSlicer;
  */
 public class Main {
 
+  /** Whether to use the SQL trips. */
+  public static final boolean SQL_TRIPS = false;
   /** The video mode. */
   public static final boolean VIDEO_MODE = false;
   /** The trail render pass. */
@@ -89,17 +93,27 @@ public class Main {
     };
     p.setFramerate(60);
     c = new Canvas(p, true, 1024, 768);
+    trails = new TrailRenderpass(p, 500, 500);
+    final TripManager mng;
+    if(SQL_TRIPS) {
+      mng = new SQLHandler("gps_trips.db");
+    } else {
+      mng = new BinaryTripManager(Resource.getFor("trip_data_1.dat"));
+    }
     frame = new JFrame("Trails") {
 
       @Override
       public void dispose() {
         c.dispose();
+        try {
+          mng.close();
+        } catch(final Exception e) {
+          e.printStackTrace();
+        }
         super.dispose();
       }
 
     };
-    trails = new TrailRenderpass(p, 500, 500);
-    final TripManager mng = new SQLHandler("gps_trips.db");
     final TimeSlicer slicer = new TripSlicer(mng);
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);
