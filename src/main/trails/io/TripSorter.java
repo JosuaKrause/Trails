@@ -229,4 +229,16 @@ public class TripSorter implements AutoCloseable {
     raf.close();
   }
 
+  /**
+   * Sorts the binary file.
+   * 
+   * @param args No arguments.
+   * @throws Exception Exception.
+   */
+  public static void main(final String[] args) throws Exception {
+    try (TripSorter s = new TripSorter(new File("trip_data_1.dat"))) {
+      s.sort();
+    }
+  }
+
 }
