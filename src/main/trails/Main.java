@@ -32,7 +32,7 @@ import trails.routes.TripSlicer;
 public class Main {
 
   /** Whether to use the SQL trips. */
-  public static final boolean SQL_TRIPS = false;
+  public static final boolean SQL_TRIPS = true;
   /** The video mode. */
   public static final boolean VIDEO_MODE = false;
   /** The trail render pass. */
