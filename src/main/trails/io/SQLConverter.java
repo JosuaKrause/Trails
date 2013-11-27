@@ -67,7 +67,7 @@ public class SQLConverter {
     }
     final long startTrip = readLastTripNumber();
     final File root = new File(args[0]);
-    try (SQLHandler sq = new SQLHandler("gps_trips.db")) {
+    try (SQLHandler sq = new SQLHandler("gps_trips")) {
       if(startTrip < 0) {
         sq.truncateTable();
         System.out.println("truncate table");

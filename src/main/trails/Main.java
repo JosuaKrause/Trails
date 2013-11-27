@@ -96,7 +96,7 @@ public class Main {
     trails = new TrailRenderpass(p, 500, 500);
     final TripManager mng;
     if(SQL_TRIPS) {
-      mng = new SQLHandler("gps_trips.db");
+      mng = new SQLHandler("gps_trips");
     } else {
       mng = new BinaryTripManager(Resource.getFor("trip_data_1.dat"));
     }

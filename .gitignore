@@ -10,3 +10,4 @@ target
 /gps_trips.db-journal
 /converter_progress.txt
 /Geolife_Trajectories_1.3/
+/.DS_Store

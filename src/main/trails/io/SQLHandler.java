@@ -29,14 +29,16 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    * 
    * @param db The database name.
    * @throws SQLException SQL Exception.
-   * @throws ClassNotFoundException When the database engine is not installed.
+   * @throws Exception Exception.
    */
-  public SQLHandler(final String db) throws SQLException, ClassNotFoundException {
-    Class.forName("org.sqlite.JDBC");
+  public SQLHandler(final String db) throws Exception {
+    final String url = "jdbc:mysql://localhost:8889/" + db;
+    final String user = "root";
+    final String password = "root";
     // Table: trips
     // Columns: start_lat, start_lon, end_lat, end_lon,
     // [start_time], end_time, vehicle
-    connection = DriverManager.getConnection("jdbc:sqlite:" + db);
+    connection = DriverManager.getConnection(url, user, password);
     System.out.println(connection.getMetaData().getURL());
   }
 
@@ -242,17 +244,18 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    */
   public void truncateTable() throws SQLException {
     final Statement stmt = connection.createStatement();
-    stmt.executeUpdate("DROP TABLE IF EXISTS trips");
-    final String create = "CREATE TABLE IF NOT EXISTS trips ( "
-        + "start_time INTEGER, "
-        + "vehicle INTEGER, "
-        + "end_time INTEGER, "
-        + "start_lat REAL, "
-        + "start_lon REAL, "
-        + "end_lat REAL, "
-        + "end_lon REAL, "
-        + "PRIMARY KEY (start_time, vehicle) ON CONFLICT REPLACE)";
-    stmt.executeUpdate(create);
+    stmt.executeUpdate("TRUNCATE TABLE trips");
+    // stmt.executeUpdate("DROP TABLE IF EXISTS trips");
+    // final String create = "CREATE TABLE IF NOT EXISTS trips ( "
+    // + "start_time INTEGER, "
+    // + "vehicle INTEGER, "
+    // + "end_time INTEGER, "
+    // + "start_lat REAL, "
+    // + "start_lon REAL, "
+    // + "end_lat REAL, "
+    // + "end_lon REAL, "
+    // + "PRIMARY KEY (start_time, vehicle))";
+    // stmt.executeUpdate(create);
     stmt.close();
     onChange();
   }
@@ -379,7 +382,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    * @throws Exception Exception.
    */
   public static void main(final String[] args) throws Exception {
-    try (SQLHandler sq = new SQLHandler("gps_trips.db")) {
+    try (SQLHandler sq = new SQLHandler("gps_trips")) {
       System.out.println(print(sq.query("SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle")));
       System.out.println(print(sq.query("SELECT MAX(end_time) AS end_time, vehicle, end_lat, end_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle")));
       System.out.println(print(sq.query("SELECT start.start_time AS start_time, start.vehicle AS vehicle, start.start_lat AS start_lat, start.start_lon AS start_lon, end.end_time AS end_time, end.end_lat AS end_lat, end.end_lon AS end_lon FROM (SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle) AS start, (SELECT MAX(end_time) AS end_time, vehicle, end_lat, end_lon FROM trips WHERE start_time >= 3433892584000 AND start_time < 3433892883999 GROUP BY vehicle) AS end WHERE start.vehicle = end.vehicle")));
