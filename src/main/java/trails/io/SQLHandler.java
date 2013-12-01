@@ -244,18 +244,21 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
    */
   public void truncateTable() throws SQLException {
     final Statement stmt = connection.createStatement();
-    stmt.executeUpdate("TRUNCATE TABLE trips");
-    // stmt.executeUpdate("DROP TABLE IF EXISTS trips");
-    // final String create = "CREATE TABLE IF NOT EXISTS trips ( "
-    // + "start_time INTEGER, "
-    // + "vehicle INTEGER, "
-    // + "end_time INTEGER, "
-    // + "start_lat REAL, "
-    // + "start_lon REAL, "
-    // + "end_lat REAL, "
-    // + "end_lon REAL, "
-    // + "PRIMARY KEY (start_time, vehicle))";
-    // stmt.executeUpdate(create);
+    // stmt.executeUpdate("TRUNCATE TABLE trips");
+    stmt.executeUpdate("DROP TABLE IF EXISTS trips");
+    final String create = "CREATE TABLE trips ("
+        + " start_time bigint NOT NULL,"
+        + " id int NOT NULL AUTO_INCREMENT,"
+        + " end_time bigint NOT NULL,"
+        + " vehicle bigint NOT NULL,"
+        + " start_lat double NOT NULL,"
+        + " start_lon double NOT NULL,"
+        + " end_lat double NOT NULL,"
+        + " end_lon double NOT NULL,"
+        + " PRIMARY KEY (start_time,id)"
+        + ") ENGINE=MyISAM;";
+    System.out.println(create);
+    stmt.executeUpdate(create);
     stmt.close();
     onChange();
   }
@@ -313,7 +316,9 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
      */
     public InsertStatement(final Connection conn) throws SQLException {
       this.conn = conn;
-      stmt = conn.prepareStatement("INSERT INTO trips VALUES(?, ?, ?, ?, ?, ?, ?)");
+      stmt = conn.prepareStatement("INSERT INTO trips "
+          + "(start_time, vehicle, end_time, start_lat, start_lon, end_lat, end_lon) "
+          + "VALUES(?, ?, ?, ?, ?, ?, ?)");
     }
 
     /** The vehicle number. */
