@@ -23,35 +23,35 @@ US Dept of State / Virginia Ave & 21st St NW,38.895208,-77.046651
 S Stafford & 34th St S,38.833406,-77.087055
 3rd St & Pennsylvania Ave SE,38.886924,-77.001997
 17th & K St NW,38.902506,-77.038475
-18th & Hayes St
-Commerce St & Fayette St
-6th St & Indiana Ave NW
+18th & Hayes St,38.857405,-77.056478
+Commerce St & Fayette St,38.805721,-77.052358
+6th St & Indiana Ave NW,38.894423,-77.019914
 Central Library
-Crystal City Metro / 18th & Bell St
-Lynn & 19th St North
-19th & E Street NW
-Ohio Dr & West Basin Dr SW / MLK & FDR Memorials
-Barton St & 10th St N
-5th & K St NW
-S Troy St & 26th St S
-18th St & Wyoming Ave NW
-Wisconsin Ave & O St NW
-S Abingdon St & 36th St S
-19th St & Pennsylvania Ave NW
-23rd & E St NW
-4th St & Rhode Island Ave NE
-20th & L St NW
-14th & D St SE
-Fairfax Village
-Washington Blvd & 10th St N
+Crystal City Metro / 18th & Bell St,18th & Bell St
+Lynn & 19th St North,38.897129,-77.070791
+19th & E Street NW,38.895392,-77.043475
+Ohio Dr & West Basin Dr SW / MLK & FDR Memorials,38.883717,-77.046393
+Barton St & 10th St N,38.884619,-77.087764
+5th & K St NW,38.902606,-77.018884
+S Troy St & 26th St S,38.847847,-77.075468
+18th St & Wyoming Ave NW,38.918735,-77.04163
+Wisconsin Ave & O St NW,38.908417,-77.06386
+S Abingdon St & 36th St S,38.834861,-77.094094
+19th St & Pennsylvania Ave NW,38.900168,-77.043475
+23rd & E St NW,38.895993,-77.050062
+4th St & Rhode Island Ave NE,38.919737,-77.00056
+20th & L St NW,38.903741,-77.044848
+14th & D St SE,38.884085,-76.985453
+Fairfax Village,38.864222,-76.952237
+Washington Blvd & 10th St N,38.884402,-77.092763
 Alabama & MLK Ave SE
-Braddock Rd Metro
-23rd & Eads
-4th & D St NW / Judiciary Square
-Eastern Market Metro / Pennsylvania Ave & 7th St SE
-N Pershing Dr & Wayne St
-S George Mason Dr & Four Mile Run
-S Four Mile Run Dr & S Shirlington Rd
+Braddock Rd Metro,38.813379,-77.053753
+23rd & Eads,38.853378,-77.053474
+4th & D St NW / Judiciary Square,38.898782,-77.01627
+Eastern Market Metro / Pennsylvania Ave & 7th St SE,38.884653,-76.996204
+N Pershing Dr & Wayne St,38.880627,-77.085682
+S George Mason Dr & Four Mile Run,38.852576,-77.103449
+S Four Mile Run Dr & S Shirlington Rd,38.844137,-77.085682
 Gallaudet / 8th St & Florida Ave NE
 20th & O St NW / Dupont South
 M St & Delaware Ave NE
