@@ -20,8 +20,8 @@ import trails.io.BinaryTripManager;
 import trails.io.SQLHandler;
 import trails.io.TripManager;
 import trails.particels.ParticleProvider;
-import trails.particels.TimeSlicer;
 import trails.particels.TrailRenderpass;
+import trails.routes.TimeSlicer;
 import trails.routes.TripSlicer;
 
 /**
@@ -143,6 +143,19 @@ public class Main {
       @Override
       public double getValue() {
         return provider.getSliceTime();
+      }
+
+    });
+    ctrl.addControlledValue(new ControlledValue("Threshold", c, 0, 1000) {
+
+      @Override
+      protected void setValueDirectly(final double value) {
+        slicer.setThreshold((int) value);
+      }
+
+      @Override
+      public double getValue() {
+        return slicer.getThreshold();
       }
 
     });

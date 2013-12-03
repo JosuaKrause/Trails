@@ -1,4 +1,6 @@
-package trails.particels;
+package trails.routes;
+
+import trails.particels.ParticleProvider;
 
 /**
  * Slices time into parts.
@@ -15,5 +17,13 @@ public interface TimeSlicer {
    * @param height The height of the image.
    */
   void timeSlice(ParticleProvider provider, int width, int height);
+
+  void setThreshold(int t);
+
+  int getThreshold();
+
+  void setTimeSlice(long slice);
+
+  long getTimeSlice();
 
 }
