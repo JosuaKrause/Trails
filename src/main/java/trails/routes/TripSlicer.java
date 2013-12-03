@@ -45,6 +45,8 @@ public class TripSlicer implements TimeSlicer {
     bottom = Double.isNaN(b) ? 40.532589 : b;
     final double t = mng.getMaxLat();
     top = Double.isNaN(t) ? 40.862122 : t;
+    System.out.println("lon: " + left + " lat: " + top +
+        " lon: " + right + " lat: " + bottom);
   }
 
   /**

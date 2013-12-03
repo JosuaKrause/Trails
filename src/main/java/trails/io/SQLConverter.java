@@ -130,8 +130,8 @@ public class SQLConverter {
 
                 @Override
                 public boolean readTrip(final Trip t, final CSVRow row, final long rowNo) {
-                  final double curLat = Double.parseDouble(row.get(0));
-                  final double curLon = Double.parseDouble(row.get(1));
+                  final double curLat = (Double.parseDouble(row.get(0)) + 360.0) % 360.0;
+                  final double curLon = (Double.parseDouble(row.get(1)) + 360.0) % 360.0;
                   final long curTime = (long) (Double.parseDouble(row.get(4)) * 24 * 60 * 60 * 1000);
                   if(!valid) {
                     lastLat = curLat;

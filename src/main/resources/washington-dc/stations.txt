@@ -1,0 +1,287 @@
+15th & F St NE,38.896673,-76.983621
+Washington Blvd & 7th St N,38.880828,-77.090489
+N Adams St & Lee Hwy,38.895292,-77.088815
+Georgia Ave and Fairmont St NW,38.924762,-77.022554
+7th & F St NW / National Portrait Gallery,38.897212,-77.021888
+Florida Ave & R St NW,38.912591,-77.013241
+S Arlington Mill Dr & Campbell Ave,38.842164,-77.089673
+George Mason Dr & Wilson Blvd,38.878255,-77.120851
+16th & Harvard St NW,38.925997,-77.036501
+McPherson Square - 14th & H St NW,38.900185,-77.031995
+11th & K St NW,38.902522,-77.026995
+18th & Eads St.,38.857539,-77.053066
+Clarendon Metro / Wilson Blvd & N Highland St,38.887525,-77.094973
+18th & M St NW,38.905678,-77.041651
+13th St & New York Ave NW,38.900235,-77.029549
+39th & Calvert St NW / Stoddert,38.922525,-77.077056
+Independence Ave & L'Enfant Plaza SW/DOE,38.887542,-77.026073
+18th & Bell St,38.857639,-77.051071
+Eastern Market / 7th & North Carolina Ave SE,38.887358,-76.996096
+Metro Center / 12th & G St NW,38.898331,-77.028047
+US Dept of State / Virginia Ave & 21st St NW,38.895208,-77.046651
+5th & Kennedy St NW,38.956455,-77.01985
+S Stafford & 34th St S,38.833406,-77.087055
+3rd St & Pennsylvania Ave SE,38.886924,-77.001997
+17th & K St NW,38.902506,-77.038475
+18th & Hayes St
+Commerce St & Fayette St
+6th St & Indiana Ave NW
+Central Library
+Crystal City Metro / 18th & Bell St
+Lynn & 19th St North
+19th & E Street NW
+Ohio Dr & West Basin Dr SW / MLK & FDR Memorials
+Barton St & 10th St N
+5th & K St NW
+S Troy St & 26th St S
+18th St & Wyoming Ave NW
+Wisconsin Ave & O St NW
+S Abingdon St & 36th St S
+19th St & Pennsylvania Ave NW
+23rd & E St NW
+4th St & Rhode Island Ave NE
+20th & L St NW
+14th & D St SE
+Fairfax Village
+Washington Blvd & 10th St N
+Alabama & MLK Ave SE
+Braddock Rd Metro
+23rd & Eads
+4th & D St NW / Judiciary Square
+Eastern Market Metro / Pennsylvania Ave & 7th St SE
+N Pershing Dr & Wayne St
+S George Mason Dr & Four Mile Run
+S Four Mile Run Dr & S Shirlington Rd
+Gallaudet / 8th St & Florida Ave NE
+20th & O St NW / Dupont South
+M St & Delaware Ave NE
+Good Hope & Naylor Rd SE
+Saint Asaph St & Pendleton  St
+3000 Connecticut Ave NW / National Zoo
+Benning Rd & East Capitol St NE / Benning Rd Metro
+21st St & Constitution Ave NW
+N Quincy St & Wilson Blvd
+6th & H St NE
+M St & Pennsylvania Ave NW
+C & O Canal & Wisconsin Ave NW
+10th & E St NW
+Good Hope Rd & 14th St SE
+Hamlin & 7th St NE
+Randle Circle & Minnesota Ave SE
+20th & E St NW
+New Hampshire Ave & T St NW
+8th & East Capitol St NE
+Central Library / N Quincy St & 10th St N
+Lincoln Memorial
+Good Hope Rd & MLK Ave SE
+17th & K St NW / Farragut Square
+1st & K St SE
+New Hampshire Ave & T St NW [formerly 16th & U St NW]
+14th & D St NW / Ronald Reagan Building
+12th & Army Navy Dr
+Fairfax Dr & Kenmore St
+21st & M St NW
+17th & Corcoran St NW
+21st & I St NW
+Maple & Ritchie Ave
+Calvert St & Woodley Pl NW
+3rd & Elm St NW
+Smithsonian / Jefferson Dr & 12th St SW
+9th & Upshur St NW
+Pershing & N George Mason Dr
+McPherson Square / 14th & H St NW
+10th St & Constitution Ave NW
+Connecticut Ave & Nebraska Ave NW
+8th & F St NE
+14th & R St NW
+4th & M St SW
+15th & N Scott St
+17th St & Massachusetts Ave NW
+Wilson Blvd & Franklin Rd
+N Veitch & Key Blvd
+USDA / 12th & Independence Ave SW
+M St & New Jersey Ave SE
+Eckington Pl & Q St NE
+Adams Mill & Columbia Rd NW
+Potomac & Pennsylvania Ave SE
+Rosslyn Metro / Wilson Blvd & Ft Myer Dr
+28th St S & S Meade St
+14th St Heights / 14th & Crittenden St NW
+7th & T St NW
+Park Rd & Holmead Pl NW
+Norfolk Ave & Fairmont St
+1st & N ST SE
+Neal St & Trinidad Ave NE
+13th & D St NE
+Lincoln Park / 13th & East Capitol St NE
+California St & Florida Ave NW
+Anacostia Metro
+Randle Circle & Minnesota Ave NE
+20th & Bell St
+1st & Washington Hospital Center NW
+Potomac Ave & 35th St S
+14th & Harvard St NW
+Idaho Ave & Newark St NW [on 2nd District patio]
+Wisconsin Ave & Macomb St NW
+Anacostia Ave & Benning Rd NE / River Terrace
+Harvard St & Adams Mill Rd NW
+12th & Irving St NE
+5th St & K St NW
+1714 Warehouse
+D St & Maryland Ave NE
+Traville Gateway Dr & Gudelsky Dr
+8th & H St NW
+Henry St & Pendleton St
+Wilson Blvd & N Edgewood St
+Fairfax Dr & Glebe Rd
+Kennedy Center
+New York Ave & 15th St NW
+8th & Eye St SE / Barracks Row
+Van Ness Metro / UDC
+4th & E St SW
+Ward Circle / American University
+19th & K St NW
+15th & Euclid St  NW
+N Rhodes & 16th St N
+Benning Branch Library
+King St & Patrick St
+Walter Reed Community Center / Walter Reed Dr & 16th St S
+Calvert & Biltmore St NW
+N Fillmore St & Clarendon Blvd
+15th & Crystal Dr
+39th & Veazey St NW
+North Capitol St & F St NW
+N Veitch  & 20th St N
+13th & U St NW
+11th & Kenyon St NW
+Branch & Pennsylvania Ave SE
+14th St & Colorado Ave NW
+34th St & Minnesota Ave SE
+10th & Monroe St NE
+24th & N St NW
+Court House Metro / Wilson Blvd & N Uhle St
+Washington & Independence Ave SW/HHS
+14th & Rhode Island Ave NW
+Utah St & 11th St N
+Columbia Pike & S Walter Reed Dr
+Constitution Ave & 2nd St NW/DOL
+11th & M St NW
+Columbia Pike & S Courthouse Rd
+Jefferson Dr & 14th St SW
+Bethesda Ave & Arlington Blvd
+Connecticut Ave & Newark St NW / Cleveland Park
+Connecticut Ave & Yuma St NW
+Clarendon Blvd & N Fillmore St
+18th & Wyoming Ave NW
+26th & Crystal Dr
+Convention Center / 7th & M St NW
+Montgomery & East Ln
+1st & Rhode Island Ave NW
+Maryland & Independence Ave SW
+Ballston Metro / N Stuart & 9th St N
+12th & Hayes St
+Prince St & Union St
+16th & U St NW
+10th & U St NW
+11th & F St NW
+23rd & Crystal Dr
+Friendship Hts Metro/Wisconsin Ave & Wisconsin Cir
+13th & H St NE
+N Randolph St & Fairfax Dr
+Anacostia Library
+Georgia Ave & Emerson St NW
+Columbia Pike & S Dinwiddie St / Arlington Mill Community Center
+Lamont & Mt Pleasant NW
+23rd & Eads St
+Wilson Blvd & N Oakland St
+7th & Water St SW / SW Waterfront
+11th & H St NE
+Philadelphia & Maple Ave
+Arlington Blvd & N Queen St
+7th & R St NW / Shaw Library
+Pleasant St & MLK Ave SE
+36th & Calvert St NW / Glover Park
+Virginia Square Metro / N Monroe St & 9th St N
+N Highland St & Wilson Blvd
+S Glebe & Potomac Ave
+20th & Crystal Dr
+Jefferson Memorial
+15th & P St NW
+Columbia Pike & S Orme St
+19th & East Capitol St SE
+3rd & H St NE
+5th & F St NW
+18th St & Pennsylvania Ave NW
+12th & L St NW
+Glebe Rd & 11th St N
+Columbia Rd & Belmont St NW
+1st & M St NE
+Columbia Rd & Georgia Ave NW
+19th St & Constitution Ave NW
+S Joyce & Army Navy Dr
+8th & D St NW
+Connecticut & Nebraska Ave NW
+Bladensburg Rd & Benning Rd NE
+14th & V St NW
+14th St & Spring Rd NW
+Columbus Circle / Union Station
+Rhode Island Ave & V St NE
+Virginia Square
+4th & East Capitol St NE
+17th & Rhode Island Ave NW
+Thomas Circle
+22nd & I St NW / Foggy Bottom
+Pennsylvania & Minnesota Ave SE
+13th St & Eastern Ave
+Alta Tech Office
+S Kenmore & 24th St S
+N Quincy St & Glebe Rd
+Georgia & New Hampshire Ave NW
+15th & East Capitol St NE
+15th St & Massachusetts Ave SE
+5th St & Massachusetts Ave NW
+Georgetown Harbor / 30th St NW
+Fenton St & New York Ave
+Cordell & Norfolk Ave
+E Montgomery Ave & Maryland Ave
+21st St & Pennsylvania Ave NW
+14th & Upshur St NW
+Fairfax Dr & Wilson Blvd
+18th St & Rhode Island Ave NE
+Fallsgrove Blvd & Fallsgrove Dr
+3rd & D St SE
+12th & Newton St NE
+Frederick Ave & Horners Ln
+White House [17th & State Pl NW]
+Minnesota Ave Metro/DOES
+19th & L St NW
+1st & N St  SE
+8th & F St NW / National Portrait Gallery
+17th & K St NW [formerly 17th & L St NW]
+Massachusetts Ave & Dupont Circle NW
+Congress Heights Metro
+New Jersey Ave & R St NW
+34th St & Wisconsin Ave NW
+15th & Hayes St
+3rd & G St SE
+15th & K St NW
+14th & G St NW
+25th St & Pennsylvania Ave NW
+Clarendon Blvd & Pierce St
+Fessenden St & Wisconsin Ave NW
+Silver Spring Metro/Colesville Rd & Wayne Ave
+20th St & Florida Ave NW
+20th St & Virginia Ave NW
+Key Blvd & N Quinn St
+12th & Hayes St /  Pentagon City Metro
+L'Enfant Plaza / 7th & C St SW
+S George Mason Dr & 13th St S
+John McCormack Dr & Michigan Ave NE
+Tenleytown / Wisconsin Ave & Albemarle St NW
+King St Metro
+37th & O St NW / Georgetown University
+27th & Crystal Dr
+Pentagon City Metro / 12th & Hayes St
+S Oakland St & Columbia Pike
+Market Square / King St & Royal St
+4th St & Massachusetts Ave NW

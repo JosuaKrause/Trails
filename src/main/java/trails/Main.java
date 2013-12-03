@@ -31,8 +31,14 @@ import trails.routes.TripSlicer;
  */
 public class Main {
 
+  /** The binary source. */
+  public static final int BIN_SOURCE = 0;
+  /** The GPS source. */
+  public static final int GPS_SOURCE = 1;
+  /** The DC source. */
+  public static final int DC_SOURCE = 2;
   /** Whether to use the SQL trips. */
-  public static final boolean SQL_TRIPS = true;
+  public static final int TRIPS_SOURCE = DC_SOURCE;
   /** The video mode. */
   public static final boolean VIDEO_MODE = false;
   /** The trail render pass. */
@@ -95,10 +101,18 @@ public class Main {
     c = new Canvas(p, true, 1024, 768);
     trails = new TrailRenderpass(p, 500, 500);
     final TripManager mng;
-    if(SQL_TRIPS) {
-      mng = new SQLHandler("gps_trips");
-    } else {
-      mng = new BinaryTripManager(Resource.getFor("trip_data_1.dat"));
+    switch(TRIPS_SOURCE) {
+      case GPS_SOURCE:
+        mng = new SQLHandler("gps_trips");
+        break;
+      case DC_SOURCE:
+        mng = new SQLHandler("dc_trips");
+        break;
+      case BIN_SOURCE:
+        mng = new BinaryTripManager(Resource.getFor("trip_data_1.dat"));
+        break;
+      default:
+        throw new AssertionError("invalid source: " + TRIPS_SOURCE);
     }
     frame = new JFrame("Trails") {
 
