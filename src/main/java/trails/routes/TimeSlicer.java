@@ -18,12 +18,32 @@ public interface TimeSlicer {
    */
   void timeSlice(ParticleProvider provider, int width, int height);
 
+  /**
+   * Setter.
+   * 
+   * @param t The threshold to remove aggregated trips.
+   */
   void setThreshold(int t);
 
+  /**
+   * Getter.
+   * 
+   * @return The threshold to remove aggregated trips.
+   */
   int getThreshold();
 
+  /**
+   * Setter.
+   * 
+   * @param slice The size of a slice.
+   */
   void setTimeSlice(long slice);
 
+  /**
+   * Getter.
+   * 
+   * @return The size of a slice.
+   */
   long getTimeSlice();
 
 }

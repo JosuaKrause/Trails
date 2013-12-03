@@ -117,14 +117,27 @@ public class TripSlicer implements TimeSlicer {
   /** Whether to skip time slices with no trips. */
   private static final boolean SKIP_GAPS = true;
 
+  /**
+   * A trip for aggregation.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
   private static final class Aggregated {
 
+    /** The start position. */
     public final Point2D from;
-
+    /** The end position. */
     public final Point2D to;
-
+    /** The duration in slices. */
     public final int slices;
 
+    /**
+     * Creates a trip for aggregation.
+     * 
+     * @param from The start position.
+     * @param to The end position.
+     * @param slices The duration in slices.
+     */
     public Aggregated(final Point2D from, final Point2D to, final int slices) {
       this.from = Objects.requireNonNull(from);
       this.to = Objects.requireNonNull(to);
@@ -182,7 +195,7 @@ public class TripSlicer implements TimeSlicer {
             continue;
           }
           provider.startPath(agg.from.getX(), agg.from.getY(),
-              agg.to, agg.slices, Math.log10(num) + 1.0);
+              agg.to, agg.slices, Math.log(num) + 1.0);
         }
         no = list.size();
         final long end = mng.getEndTime();
