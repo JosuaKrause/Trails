@@ -108,4 +108,18 @@ public class Controller {
     return Collections.unmodifiableCollection(times);
   }
 
+  /**
+   * Refreshes all times.
+   * 
+   * @param except The panel to skip.
+   */
+  public void refreshTimes(final TimePanel except) {
+    for(final TimePanel pan : times) {
+      if(pan == except) {
+        continue;
+      }
+      pan.setTime(pan.parentTime());
+    }
+  }
+
 }

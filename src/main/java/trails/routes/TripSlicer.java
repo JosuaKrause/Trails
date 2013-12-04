@@ -17,18 +17,14 @@ import trails.particels.ParticleProvider;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class TripSlicer implements TimeSlicer {
+public class TripSlicer extends TimeSlicer {
 
   /** The underlying trip manager. */
   private final TripManager mng;
-  /** The size of the time slice. */
-  private long timeSlice = 3L * 60L * 60L * 1000L; // 1h
   /** The current time. */
   private long curTime;
   /** The current index. */
   private long curIndex;
-  /** The threshold. */
-  private int threshold;
 
   /**
    * Creates a new trip slicer.
@@ -50,37 +46,6 @@ public class TripSlicer implements TimeSlicer {
     top = Double.isNaN(t) ? 40.862122 : t;
     System.out.println("lon: " + left + " lat: " + top +
         " lon: " + right + " lat: " + bottom);
-  }
-
-  @Override
-  public void setThreshold(final int threshold) {
-    this.threshold = threshold;
-  }
-
-  @Override
-  public int getThreshold() {
-    return threshold;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The size of the time slice.
-   */
-  @Override
-  public long getTimeSlice() {
-    return timeSlice;
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param timeSlice The size of the time slice.
-   */
-  @Override
-  public void setTimeSlice(final long timeSlice) {
-    if(timeSlice < 1000L) throw new IllegalArgumentException("" + timeSlice);
-    this.timeSlice = timeSlice;
   }
 
   /** The leftmost longitude coordinate. */
@@ -172,11 +137,12 @@ public class TripSlicer implements TimeSlicer {
     try {
       int no;
       do {
-        final long curEnd = curTime + timeSlice - 1L;
-        final List<Trip> list = mng.read(curIndex, curTime, curEnd);
+        final long startInterval = curTime + getIntervalFrom();
+        final long endInterval = curTime + getIntervalTo() - 1L;
+        final List<Trip> list = mng.read(curIndex, startInterval, endInterval);
         final Map<Aggregated, Integer> journeys = new HashMap<>();
         for(final Trip t : list) {
-          final int slices = (int) ((t.getDropoffTime() - curTime) / timeSlice) + 1;
+          final int slices = getNumberOfSlices(curTime, t.getDropoffTime());
           final Point2D from = new Point2D.Double(getX(t.getPickupLon(), width),
               getY(t.getPickupLat(), height));
           final Point2D to = new Point2D.Double(getX(t.getDropoffLon(), width),
@@ -191,7 +157,7 @@ public class TripSlicer implements TimeSlicer {
         for(final Entry<Aggregated, Integer> e : journeys.entrySet()) {
           final Aggregated agg = e.getKey();
           final int num = e.getValue();
-          if(num < threshold) {
+          if(num < getThreshold()) {
             continue;
           }
           provider.startPath(agg.from.getX(), agg.from.getY(),
@@ -199,7 +165,7 @@ public class TripSlicer implements TimeSlicer {
         }
         no = list.size();
         final long end = mng.getEndTime();
-        curTime = curEnd + 1L;
+        curTime += getTimeSlice();
         if(no != 0) {
           curIndex = list.get(list.size() - 1).getIndex() + 1L;
         }

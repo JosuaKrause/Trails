@@ -28,13 +28,13 @@ public abstract class TimePanel extends JPanel {
 
     @Override
     public void stateChanged(final ChangeEvent e) {
-      if(onChange) return;
+      if(onChange > 0) return;
       setTime(getTime());
     }
 
   };
   /** Is set during change. */
-  protected boolean onChange = false;
+  protected int onChange;
   /** The description of the time panel. */
   private final String name;
 
@@ -51,7 +51,7 @@ public abstract class TimePanel extends JPanel {
     addSpinner("h", 24L);
     addSpinner("m", 60L);
     addSpinner("s", 60L);
-    setTime(initialTime());
+    setTimeDirectly(parentTime());
   }
 
   /**
@@ -80,18 +80,33 @@ public abstract class TimePanel extends JPanel {
   /**
    * Setter.
    * 
-   * @param millis The time span represented by this time panel.
+   * @param millis The time span in milliseconds.
    */
-  public void setTime(final long millis) {
-    onChange = true;
-    long time = Math.max(millis / 1000L, 1L);
+  private void setTimeDirectly(final long millis) {
+    ++onChange;
+    long time = Math.max(millis / 1000L, 0L);
     for(int pos = spinner.size() - 1; pos >= 0; --pos) {
       final long range = ranges.get(pos);
       spinner.get(pos).setValue(time % range);
       time /= range;
     }
-    onChange = false;
+    --onChange;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param millis The time span represented by this time panel.
+   */
+  public void setTime(final long millis) {
+    if(onChange > 0) return;
+    ++onChange;
+    setTimeDirectly(millis);
     onChange(getTime());
+    if(getTime() != parentTime()) {
+      setTimeDirectly(parentTime());
+    }
+    --onChange;
   }
 
   /**
@@ -106,7 +121,7 @@ public abstract class TimePanel extends JPanel {
    * 
    * @return This method is called to initialize the time panel.
    */
-  protected abstract long initialTime();
+  protected abstract long parentTime();
 
   /**
    * Adds a spinner.

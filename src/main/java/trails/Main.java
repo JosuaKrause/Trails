@@ -99,7 +99,7 @@ public class Main {
 
     };
     p.setFramerate(60);
-    c = new Canvas(p, true, 800, 600);
+    c = new Canvas(p, true, 600, 600);
     trails = new TrailRenderpass(p, 500, 500);
     final TripManager mng;
     switch(TRIPS_SOURCE) {
@@ -163,13 +163,42 @@ public class Main {
     ctrl.addTimePanel(new TimePanel("Slice") {
 
       @Override
-      protected long initialTime() {
+      protected long parentTime() {
         return slicer.getTimeSlice();
       }
 
       @Override
       protected void onChange(final long time) {
         slicer.setTimeSlice(time);
+        ctrl.refreshTimes(this);
+      }
+
+    });
+    ctrl.addTimePanel(new TimePanel("From") {
+
+      @Override
+      protected long parentTime() {
+        return slicer.getIntervalFrom();
+      }
+
+      @Override
+      protected void onChange(final long time) {
+        slicer.setInterval(time, slicer.getIntervalTo());
+        ctrl.refreshTimes(this);
+      }
+
+    });
+    ctrl.addTimePanel(new TimePanel("To") {
+
+      @Override
+      protected long parentTime() {
+        return slicer.getIntervalTo();
+      }
+
+      @Override
+      protected void onChange(final long time) {
+        slicer.setInterval(slicer.getIntervalFrom(), time);
+        ctrl.refreshTimes(this);
       }
 
     });
