@@ -16,6 +16,7 @@ import jkanvas.util.Screenshot;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
+import trails.controls.TimePanel;
 import trails.io.BinaryTripManager;
 import trails.io.SQLHandler;
 import trails.io.TripManager;
@@ -98,7 +99,7 @@ public class Main {
 
     };
     p.setFramerate(60);
-    c = new Canvas(p, true, 1024, 768);
+    c = new Canvas(p, true, 800, 600);
     trails = new TrailRenderpass(p, 500, 500);
     final TripManager mng;
     switch(TRIPS_SOURCE) {
@@ -133,7 +134,7 @@ public class Main {
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);
 
     final Controller ctrl = new Controller(c);
-    ctrl.addControlledValue(new ControlledValue("Speed", c, 100.0, 2000.0) {
+    ctrl.addControlledValue(new ControlledValue("Slice Time", c, 100.0, 2000.0) {
 
       @Override
       protected void setValueDirectly(final double value) {
@@ -159,12 +160,26 @@ public class Main {
       }
 
     });
+    ctrl.addTimePanel(new TimePanel("Slice") {
+
+      @Override
+      protected long initialTime() {
+        return slicer.getTimeSlice();
+      }
+
+      @Override
+      protected void onChange(final long time) {
+        slicer.setTimeSlice(time);
+      }
+
+    });
     help = ExampleUtil.setupCanvas(frame, c, p, true, true, true, true);
     frame.setLayout(new BorderLayout());
     frame.remove(c);
     frame.add(c, BorderLayout.CENTER);
     frame.add(new ControlPanel(ctrl), BorderLayout.WEST);
     frame.pack();
+    frame.setLocationRelativeTo(null);
     p.addPass(trails);
     c.reset();
   }

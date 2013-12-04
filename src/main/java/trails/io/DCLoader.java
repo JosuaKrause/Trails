@@ -48,6 +48,7 @@ public class DCLoader {
     if(CREATE_STATIONS || !stationFile.exists()) {
       System.out.println("create station file");
       createStationFile(stationFile);
+      return;
     }
     final Map<String, Point2D> stations = new HashMap<>();
     final CSVReader reader = new CSVReader(',', '"', false, false, true);

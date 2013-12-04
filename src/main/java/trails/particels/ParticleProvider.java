@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import trails.routes.TimeSlicer;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Interpolator;
+import trails.routes.TimeSlicer;
 
 /**
  * Provides particles to animate. The particles are managed internally.
@@ -154,7 +154,8 @@ public final class ParticleProvider {
    * @return The animation timing for the given number of slices.
    */
   protected AnimationTiming getFor(final int slices) {
-    return new AnimationTiming(interpolate, slices * sliceTime);
+    // till end of the given slice
+    return new AnimationTiming(interpolate, (slices + 1) * sliceTime);
   }
 
   /**

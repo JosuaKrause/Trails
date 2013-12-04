@@ -46,6 +46,13 @@ public final class ControlPanel extends JPanel {
       addHor(this, new JLabel(v.getName() + ":"), Box.createHorizontalGlue(), spinner);
       add(space);
     }
+
+    for(final TimePanel pan : ctrl.times()) {
+      addHor(this, new JLabel(pan.getDescription() + ":"),
+          Box.createHorizontalGlue(), pan);
+      add(space);
+    }
+
     // end of layout
     add(Box.createVerticalGlue());
   }

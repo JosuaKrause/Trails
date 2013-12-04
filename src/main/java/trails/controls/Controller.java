@@ -18,6 +18,8 @@ public class Controller {
 
   /** The list of controlled values. */
   private final List<ControlledValue> values;
+  /** The list of time panels. */
+  private final List<TimePanel> times;
 
   /**
    * Creates a new controller.
@@ -25,6 +27,7 @@ public class Controller {
    * @param refreshee The object that will be notified when a value changes.
    */
   public Controller(final Refreshable refreshee) {
+    times = new ArrayList<>();
     values = new ArrayList<>();
     values.add(new ControlledValue("Curve Bend", refreshee, 0, 1) {
 
@@ -78,12 +81,31 @@ public class Controller {
   }
 
   /**
+   * Adds another time panel.
+   * 
+   * @param pan The time panel.
+   */
+  public void addTimePanel(final TimePanel pan) {
+    Objects.requireNonNull(pan);
+    times.add(pan);
+  }
+
+  /**
    * Getter.
    * 
    * @return The controlled values.
    */
   public Iterable<ControlledValue> values() {
     return Collections.unmodifiableCollection(values);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The time panels.
+   */
+  public Iterable<TimePanel> times() {
+    return Collections.unmodifiableCollection(times);
   }
 
 }
