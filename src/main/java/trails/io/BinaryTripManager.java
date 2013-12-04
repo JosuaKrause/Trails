@@ -165,7 +165,7 @@ public class BinaryTripManager implements TripManager {
             continue;
           }
           final long time = trip.getPickupTime();
-          if(time <= toTime && time >= fromTime) {
+          if(time < toTime && time >= fromTime) {
             list.add(trip);
           }
         }
@@ -179,7 +179,7 @@ public class BinaryTripManager implements TripManager {
           continue;
         }
         final long time = cur.getPickupTime();
-        if(time > toTime) return;
+        if(time >= toTime) return;
         if(time >= fromTime) {
           list.add(cur);
           cur = new Trip();

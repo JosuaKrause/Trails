@@ -5,8 +5,11 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
@@ -252,6 +255,16 @@ public class Main {
       }
 
     });
+    final JCheckBox cb = new JCheckBox("Skip empty slices", TripSlicer.SKIP_GAPS);
+    cb.addChangeListener(new ChangeListener() {
+
+      @Override
+      public void stateChanged(final ChangeEvent e) {
+        TripSlicer.SKIP_GAPS = cb.isSelected();
+      }
+
+    });
+    ctrl.addComponent(null, cb);
     final JTextField info = new JTextField();
     info.setMaximumSize(new Dimension(400, 40));
     info.setPreferredSize(new Dimension(320, 40));

@@ -82,7 +82,7 @@ public class TripSlicer extends TimeSlicer {
   }
 
   /** Whether to skip time slices with no trips. */
-  private static boolean SKIP_GAPS = false;
+  public static boolean SKIP_GAPS = true;
 
   /**
    * A trip for aggregation.
@@ -141,9 +141,7 @@ public class TripSlicer extends TimeSlicer {
       int no;
       do {
         final long startInterval = curTime + getIntervalFrom();
-        final long endInterval = curTime + getIntervalTo() - 1L;
-        setInfoText(fmt.format(new Date(startInterval)) + " -> "
-            + fmt.format(new Date(endInterval + 1L)));
+        final long endInterval = curTime + getIntervalTo();
         final List<Trip> list = mng.read(curIndex, startInterval, endInterval);
         final Map<Aggregated, Integer> journeys = new HashMap<>();
         for(final Trip t : list) {
@@ -180,6 +178,8 @@ public class TripSlicer extends TimeSlicer {
           System.out.println("full cycle!");
         }
         System.out.println("trips: " + no);
+        setInfoText(fmt.format(new Date(startInterval)) + " -> "
+            + fmt.format(new Date(endInterval)));
       } while(SKIP_GAPS && no == 0);
     } catch(final IOException io) {
       throw new IllegalStateException(io);

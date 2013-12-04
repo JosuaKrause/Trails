@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import jkanvas.io.csv.CSVReader;
@@ -82,35 +83,69 @@ public class DCLoader {
         System.out.println("reading " + f);
         final Trip t = new Trip();
         t.setVehicle(0);
+        int count = 0;
         try (InsertStatement is = sql.beginSection()) {
           for(final CSVRow row : CSVReader.readRows(Resource.getFor(f), reader)) {
-            final Point2D from = stations.get(row.get("Start Station"));
-            final Point2D to = stations.get(row.get("End Station"));
+            String sStation = row.get("Start Station");
+            if(sStation == null) {
+              sStation = row.get("Start station");
+            }
+            Objects.requireNonNull(sStation);
+            String eStation = row.get("End Station");
+            if(eStation == null) {
+              eStation = row.get("End station");
+            }
+            Objects.requireNonNull(eStation);
+            final Point2D from = stations.get(sStation);
+            final Point2D to = stations.get(eStation);
             if(from == null || to == null) {
               continue;
             }
             try {
-              final Date time = fmt.parse(row.get("Start time"));
+              String st = row.get("Start time");
+              if(st == null) {
+                st = row.get("Start date");
+              }
+              Objects.requireNonNull(st);
+              final Date time = fmt.parse(st);
               final long start = time.getTime();
               final String[] duration = row.get("Duration").split(" ");
-              final int hour = Integer.parseInt(
-                  duration[0].substring(0, duration[0].length() - 1));
-              final int min = Integer.parseInt(
-                  duration[1].substring(0, duration[1].length() - 1));
-              final int sec = Integer.parseInt(
-                  duration[2].substring(0, duration[2].length() - 1));
+              final int hour = getFrontInt(duration[0]);
+              final int min = getFrontInt(duration[1]);
+              final int sec = getFrontInt(duration[2]);
               final long end = start + ((hour * 60L + min) * 60L + sec) * 1000L;
               t.set(num++, from.getY(), from.getX(), start, to.getY(), to.getX(), end);
               is.insert(t);
+              ++count;
             } catch(final Exception e) {
               // continue...
               System.err.println(row.toString());
             }
           }
+
         }
+        System.out.println("#trips: " + count);
       }
       System.out.println("number of trips: " + num);
     }
+  }
+
+  /**
+   * Parses the number in front of the characters.
+   * 
+   * @param txt The text.
+   * @return The number.
+   */
+  private static int getFrontInt(final String txt) {
+    int end = 0;
+    while(end < txt.length()) {
+      final char c = txt.charAt(end);
+      if(!"0123456789".contains("" + c)) {
+        break;
+      }
+      ++end;
+    }
+    return Integer.parseInt(txt.substring(0, end));
   }
 
   /**

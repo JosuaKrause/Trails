@@ -48,8 +48,12 @@ public final class ControlPanel extends JPanel {
     }
 
     for(final ValueRefresher pan : ctrl.refresher()) {
-      addHor(this, new JLabel(pan.getDescription() + ":"),
-          Box.createHorizontalGlue(), pan.getComponent());
+      if(pan.getDescription() != null) {
+        addHor(this, new JLabel(pan.getDescription() + ":"),
+            Box.createHorizontalGlue(), pan.getComponent());
+      } else {
+        addHor(this, Box.createHorizontalGlue(), pan.getComponent());
+      }
       add(space);
     }
 

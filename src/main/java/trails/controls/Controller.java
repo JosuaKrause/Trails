@@ -131,7 +131,6 @@ public class Controller {
    * @param comp The component.
    */
   public void addComponent(final String name, final JComponent comp) {
-    Objects.requireNonNull(name);
     Objects.requireNonNull(comp);
     addValueRefresher(new ValueRefresher() {
 

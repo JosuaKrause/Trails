@@ -47,10 +47,10 @@ public abstract class TimePanel extends JPanel implements ValueRefresher {
   public TimePanel(final String name) {
     this.name = name;
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    addSpinner("M", 12L);
-    addSpinner("d", 30L);
-    addSpinner("h", 24L);
-    addSpinner("m", 60L);
+    addSpinner("M ", 12L);
+    addSpinner("d ", 30L);
+    addSpinner("h ", 24L);
+    addSpinner("m ", 60L);
     addSpinner("s", 60L);
     setTimeDirectly(parentTime());
   }

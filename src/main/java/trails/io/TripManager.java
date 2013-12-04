@@ -15,7 +15,7 @@ public interface TripManager extends AutoCloseable {
    * 
    * @param startIndex A hint for the starting index. This value may be ignored.
    * @param fromTime The lowest inclusive time.
-   * @param toTime The highest inclusive time.
+   * @param toTime The highest exclusive time.
    * @return The list containing the trips.
    * @throws IOException I/O Exception.
    */
