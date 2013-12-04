@@ -1,5 +1,9 @@
 package trails.routes;
 
+import java.util.Objects;
+
+import javax.swing.JTextField;
+
 import trails.particels.ParticleProvider;
 
 /**
@@ -10,7 +14,7 @@ import trails.particels.ParticleProvider;
 public abstract class TimeSlicer {
 
   /** The size of the time slice. */
-  private long timeSlice = 3L * 60L * 60L * 1000L; // 1h
+  private long timeSlice = 1L * 24L * 60L * 60L * 1000L; // 1d
   /** The threshold. */
   private int threshold;
 
@@ -69,9 +73,9 @@ public abstract class TimeSlicer {
   }
 
   /** The start of the interval. */
-  private long intervalFrom = 0L;
+  private long intervalFrom = 12L * 60L * 60L * 1000L; // 12h
   /** The end of the interval exclusive. */
-  private long intervalTo = timeSlice;
+  private long intervalTo = 15L * 60L * 60L * 1000L; // 15h
 
   /**
    * Setter. The value has to be checked afterwards.
@@ -101,12 +105,31 @@ public abstract class TimeSlicer {
   }
 
   /**
+   * Setter.
+   * 
+   * @param from The percent of the start inclusive.
+   * @param to The percent of the end exclusive.
+   */
+  public void setPercent(final double from, final double to) {
+    setInterval((long) Math.floor(from * timeSlice), (long) Math.ceil(to * timeSlice));
+  }
+
+  /**
    * Getter.
    * 
    * @return The interval start inclusive.
    */
   public long getIntervalFrom() {
     return intervalFrom;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The percent of the start inclusive.
+   */
+  public double getPercentFrom() {
+    return (double) intervalFrom / timeSlice;
   }
 
   /**
@@ -121,12 +144,44 @@ public abstract class TimeSlicer {
   /**
    * Getter.
    * 
+   * @return The percent of the end exclusive.
+   */
+  public double getPercentTo() {
+    return (double) intervalTo / timeSlice;
+  }
+
+  /**
+   * Getter.
+   * 
    * @param from The start.
    * @param to The end.
    * @return How many slices this span includes.
    */
   protected int getNumberOfSlices(final long from, final long to) {
-    return (int) ((to - from) / (intervalTo - intervalFrom));
+    return (int) ((to - from) / (intervalTo - intervalFrom)) + 1;
+  }
+
+  /** The text info field. */
+  private JTextField info;
+
+  /**
+   * Setter.
+   * 
+   * @param info The text info field.
+   */
+  public void setInfo(final JTextField info) {
+    this.info = info;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param text Sets the text of the text info field if any.
+   */
+  public void setInfoText(final String text) {
+    Objects.requireNonNull(text);
+    if(info == null) return;
+    info.setText(text);
   }
 
 }

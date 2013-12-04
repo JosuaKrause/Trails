@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -17,7 +18,7 @@ import javax.swing.event.ChangeListener;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public abstract class TimePanel extends JPanel {
+public abstract class TimePanel extends JPanel implements ValueRefresher {
 
   /** The spinner. */
   private final List<JSpinner> spinner = new ArrayList<>();
@@ -54,13 +55,14 @@ public abstract class TimePanel extends JPanel {
     setTimeDirectly(parentTime());
   }
 
-  /**
-   * Getter.
-   * 
-   * @return The description of the time panel.
-   */
+  @Override
   public String getDescription() {
     return name;
+  }
+
+  @Override
+  public void refreshValue() {
+    setTime(parentTime());
   }
 
   /**
@@ -179,6 +181,11 @@ public abstract class TimePanel extends JPanel {
     add(spin);
     add(new JLabel(name));
     ranges.add(max);
+  }
+
+  @Override
+  public JComponent getComponent() {
+    return this;
   }
 
 }

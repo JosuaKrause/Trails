@@ -2,6 +2,8 @@ package trails.routes;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +82,7 @@ public class TripSlicer extends TimeSlicer {
   }
 
   /** Whether to skip time slices with no trips. */
-  private static final boolean SKIP_GAPS = true;
+  private static boolean SKIP_GAPS = false;
 
   /**
    * A trip for aggregation.
@@ -134,11 +136,14 @@ public class TripSlicer extends TimeSlicer {
   @Override
   public void timeSlice(final ParticleProvider provider, final int width, final int height) {
     if(curTime < 0) throw new IllegalStateException("no start");
+    final SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
     try {
       int no;
       do {
         final long startInterval = curTime + getIntervalFrom();
         final long endInterval = curTime + getIntervalTo() - 1L;
+        setInfoText(fmt.format(new Date(startInterval)) + " -> "
+            + fmt.format(new Date(endInterval + 1L)));
         final List<Trip> list = mng.read(curIndex, startInterval, endInterval);
         final Map<Aggregated, Integer> journeys = new HashMap<>();
         for(final Trip t : list) {

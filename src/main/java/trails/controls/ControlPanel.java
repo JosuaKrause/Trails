@@ -33,8 +33,8 @@ public final class ControlPanel extends JPanel {
       final SpinnerNumberModel m = new SpinnerNumberModel(
           v.getValue(), v.getMinValue(), v.getMaxValue(), step);
       final JSpinner spinner = new JSpinner(m);
-      spinner.setMaximumSize(new Dimension(60, 40));
-      spinner.setPreferredSize(new Dimension(60, 40));
+      spinner.setMaximumSize(new Dimension(100, 40));
+      spinner.setPreferredSize(new Dimension(100, 40));
       spinner.addChangeListener(new ChangeListener() {
 
         @Override
@@ -47,9 +47,9 @@ public final class ControlPanel extends JPanel {
       add(space);
     }
 
-    for(final TimePanel pan : ctrl.times()) {
+    for(final ValueRefresher pan : ctrl.refresher()) {
       addHor(this, new JLabel(pan.getDescription() + ":"),
-          Box.createHorizontalGlue(), pan);
+          Box.createHorizontalGlue(), pan.getComponent());
       add(space);
     }
 

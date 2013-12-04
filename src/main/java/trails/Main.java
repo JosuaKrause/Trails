@@ -1,10 +1,12 @@
 package trails;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
@@ -16,6 +18,7 @@ import jkanvas.util.Screenshot;
 import trails.controls.ControlPanel;
 import trails.controls.ControlledValue;
 import trails.controls.Controller;
+import trails.controls.RangeSlider;
 import trails.controls.TimePanel;
 import trails.io.BinaryTripManager;
 import trails.io.SQLHandler;
@@ -131,8 +134,28 @@ public class Main {
     };
     final TimeSlicer slicer = new TripSlicer(mng);
     System.out.println("time slicer initialized");
-    final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 1000);
+    final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 500);
+    final Controller ctrl = initCtrl(provider, slicer);
+    help = ExampleUtil.setupCanvas(frame, c, p, true, true, true, true);
+    frame.setLayout(new BorderLayout());
+    frame.remove(c);
+    frame.add(c, BorderLayout.CENTER);
+    frame.add(new ControlPanel(ctrl), BorderLayout.WEST);
+    frame.pack();
+    frame.setLocationRelativeTo(null);
+    p.addPass(trails);
+    c.reset();
+  }
 
+  /**
+   * Initializes the controller.
+   * 
+   * @param provider The particle provider.
+   * @param slicer The time slicer.
+   * @return The controller.
+   */
+  public static Controller initCtrl(
+      final ParticleProvider provider, final TimeSlicer slicer) {
     final Controller ctrl = new Controller(c);
     ctrl.addControlledValue(new ControlledValue("Slice Time", c, 100.0, 2000.0) {
 
@@ -160,7 +183,7 @@ public class Main {
       }
 
     });
-    ctrl.addTimePanel(new TimePanel("Slice") {
+    ctrl.addValueRefresher(new TimePanel("Slice") {
 
       @Override
       protected long parentTime() {
@@ -174,7 +197,7 @@ public class Main {
       }
 
     });
-    ctrl.addTimePanel(new TimePanel("From") {
+    ctrl.addValueRefresher(new TimePanel("From") {
 
       @Override
       protected long parentTime() {
@@ -188,7 +211,7 @@ public class Main {
       }
 
     });
-    ctrl.addTimePanel(new TimePanel("To") {
+    ctrl.addValueRefresher(new TimePanel("To") {
 
       @Override
       protected long parentTime() {
@@ -202,14 +225,39 @@ public class Main {
       }
 
     });
-    help = ExampleUtil.setupCanvas(frame, c, p, true, true, true, true);
-    frame.setLayout(new BorderLayout());
-    frame.remove(c);
-    frame.add(c, BorderLayout.CENTER);
-    frame.add(new ControlPanel(ctrl), BorderLayout.WEST);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    p.addPass(trails);
-    c.reset();
+    ctrl.addValueRefresher(new RangeSlider(0, 100) {
+
+      private int change;
+
+      @Override
+      public void refreshValue() {
+        ++change;
+        final double pFrom = slicer.getPercentFrom();
+        final double pTo = slicer.getPercentTo();
+        setValue((int) Math.floor(pFrom * 100.0));
+        setUpperValue((int) Math.ceil(pTo * 100.0));
+        --change;
+      }
+
+      @Override
+      protected void onChange() {
+        if(change > 0) return;
+        slicer.setPercent(getValue() / 100.0, getUpperValue() / 100.0);
+        ctrl.refreshTimes(null);
+      }
+
+      @Override
+      public String getDescription() {
+        return "Interval";
+      }
+
+    });
+    final JTextField info = new JTextField();
+    info.setMaximumSize(new Dimension(400, 40));
+    info.setPreferredSize(new Dimension(320, 40));
+    slicer.setInfo(info);
+    ctrl.addComponent("Current Slice", info);
+    return ctrl;
   }
+
 }

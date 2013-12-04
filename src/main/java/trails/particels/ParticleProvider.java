@@ -171,7 +171,7 @@ public final class ParticleProvider {
     return n;
   }
 
-  /** The maximal number of particles to blean. */
+  /** The maximal number of particles to clean. */
   private final int cleanLimit = 1000;
 
   /** Clean up unused particles. */
@@ -202,7 +202,7 @@ public final class ParticleProvider {
    * @param sliceTime The time of one slice.
    */
   public void setSliceTime(final long sliceTime) {
-    if(sliceTime <= 1000) throw new IllegalArgumentException("" + sliceTime);
+    if(sliceTime < 100) throw new IllegalArgumentException("" + sliceTime);
     this.sliceTime = sliceTime;
   }
 

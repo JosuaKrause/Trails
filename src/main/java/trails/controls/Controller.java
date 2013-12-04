@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.JComponent;
+
 import jkanvas.Refreshable;
 import trails.particels.Particle;
 import trails.particels.TrailRenderpass;
@@ -19,7 +21,7 @@ public class Controller {
   /** The list of controlled values. */
   private final List<ControlledValue> values;
   /** The list of time panels. */
-  private final List<TimePanel> times;
+  private final List<ValueRefresher> vrs;
 
   /**
    * Creates a new controller.
@@ -27,7 +29,7 @@ public class Controller {
    * @param refreshee The object that will be notified when a value changes.
    */
   public Controller(final Refreshable refreshee) {
-    times = new ArrayList<>();
+    vrs = new ArrayList<>();
     values = new ArrayList<>();
     values.add(new ControlledValue("Curve Bend", refreshee, 0, 1) {
 
@@ -81,13 +83,13 @@ public class Controller {
   }
 
   /**
-   * Adds another time panel.
+   * Adds another value refresher.
    * 
-   * @param pan The time panel.
+   * @param pan The value refresher.
    */
-  public void addTimePanel(final TimePanel pan) {
+  public void addValueRefresher(final ValueRefresher pan) {
     Objects.requireNonNull(pan);
-    times.add(pan);
+    vrs.add(pan);
   }
 
   /**
@@ -102,10 +104,10 @@ public class Controller {
   /**
    * Getter.
    * 
-   * @return The time panels.
+   * @return The value refreshers.
    */
-  public Iterable<TimePanel> times() {
-    return Collections.unmodifiableCollection(times);
+  public Iterable<ValueRefresher> refresher() {
+    return Collections.unmodifiableCollection(vrs);
   }
 
   /**
@@ -113,13 +115,42 @@ public class Controller {
    * 
    * @param except The panel to skip.
    */
-  public void refreshTimes(final TimePanel except) {
-    for(final TimePanel pan : times) {
+  public void refreshTimes(final ValueRefresher except) {
+    for(final ValueRefresher pan : vrs) {
       if(pan == except) {
         continue;
       }
-      pan.setTime(pan.parentTime());
+      pan.refreshValue();
     }
+  }
+
+  /**
+   * Adds a component.
+   * 
+   * @param name The name of the component.
+   * @param comp The component.
+   */
+  public void addComponent(final String name, final JComponent comp) {
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(comp);
+    addValueRefresher(new ValueRefresher() {
+
+      @Override
+      public void refreshValue() {
+        // nothing to do
+      }
+
+      @Override
+      public String getDescription() {
+        return name;
+      }
+
+      @Override
+      public JComponent getComponent() {
+        return comp;
+      }
+
+    });
   }
 
 }
