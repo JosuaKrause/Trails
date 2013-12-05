@@ -60,6 +60,7 @@ public class DCLoader {
         final double lon = Double.parseDouble(row.get(2));
         stations.put(name, new Point2D.Double(lon, lat));
       } catch(final Exception e) {
+        e.printStackTrace();
         // continue
       }
     }
@@ -91,14 +92,28 @@ public class DCLoader {
               sStation = row.get("Start station");
             }
             Objects.requireNonNull(sStation);
+            final String sSt = sStation;
+            if(sStation.contains("(")) {
+              sStation = sStation.substring(0, sStation.indexOf("(")).trim();
+            }
             String eStation = row.get("End Station");
             if(eStation == null) {
               eStation = row.get("End station");
             }
             Objects.requireNonNull(eStation);
+            final String eSt = eStation;
+            if(eStation.contains("(")) {
+              eStation = eStation.substring(0, eStation.indexOf("(")).trim();
+            }
             final Point2D from = stations.get(sStation);
             final Point2D to = stations.get(eStation);
             if(from == null || to == null) {
+              if(from == null && !sSt.isEmpty()) {
+                System.err.println("sStation not found: " + sStation + " " + sSt);
+              }
+              if(to == null && !eSt.isEmpty()) {
+                System.err.println("eStation not found: " + eStation + " " + eSt);
+              }
               continue;
             }
             try {
@@ -162,7 +177,9 @@ public class DCLoader {
       System.out.println("reading " + f);
       for(final CSVRow row : CSVReader.readRows(Resource.getFor(f), reader)) {
         stations.add(row.get("Start Station"));
+        stations.add(row.get("Start station"));
         stations.add(row.get("End Station"));
+        stations.add(row.get("End station"));
       }
     }
     System.out.println("writing stations to " + out);
