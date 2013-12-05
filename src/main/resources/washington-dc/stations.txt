@@ -53,7 +53,7 @@ N Pershing Dr & Wayne St,38.880627,-77.085682
 S George Mason Dr & Four Mile Run,38.852576,-77.103449
 S Four Mile Run Dr & S Shirlington Rd,38.844137,-77.085682
 Gallaudet / 8th St & Florida Ave NE,38.890369, -77.03196
-20th & O St NW / Dupont South,38.636318, -87.178139
+20th & O St NW / Dupont South,38.908534,-77.045753
 M St & Delaware Ave NE,38.87646, -77.01386
 Good Hope & Naylor Rd SE,38.8612, -76.96936
 Saint Asaph St & Pendleton  St,38.890369, -77.03196
