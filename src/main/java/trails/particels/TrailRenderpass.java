@@ -200,8 +200,8 @@ public class TrailRenderpass extends AbstractRenderpass {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return new Rectangle2D.Double(0, 0, getWidth(), getHeight());
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(0, 0, getWidth(), getHeight());
   }
 
   /**
