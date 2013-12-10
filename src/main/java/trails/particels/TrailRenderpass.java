@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 import jkanvas.KanvasContext;
 import jkanvas.animation.Animated;
 import jkanvas.animation.Animator;
-import jkanvas.painter.AbstractRenderpass;
+import jkanvas.painter.Renderpass;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.SnapshotList.Snapshot;
 import trails.Main;
@@ -23,7 +23,7 @@ import trails.Main;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class TrailRenderpass extends AbstractRenderpass {
+public class TrailRenderpass extends Renderpass {
 
   /** The strength of the particles. */
   public static float particleStrength = 0.97f;
