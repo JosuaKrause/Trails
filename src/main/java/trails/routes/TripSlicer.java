@@ -249,7 +249,7 @@ public class TripSlicer extends TimeSlicer {
   public void timeSlice(final ParticleProvider provider, final int width, final int height) {
     if(curTime < 0) throw new IllegalStateException("no start");
     int skipped = -1;
-    final SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    final SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd E HH:mm:ss ");
     try {
       int no;
       do {
@@ -291,8 +291,8 @@ public class TripSlicer extends TimeSlicer {
           System.out.println("full cycle!");
         }
         System.out.println("trips: " + no);
-        setInfoText(fmt.format(new Date(startInterval)) + " -> "
-            + fmt.format(new Date(endInterval)));
+        setInfoText(
+            fmt.format(new Date(startInterval)), fmt.format(new Date(endInterval)));
       } while(SKIP_GAPS && no == 0);
       if(skipped == 0) {
         fillLastSlot(curTime);

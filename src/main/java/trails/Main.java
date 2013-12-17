@@ -170,7 +170,7 @@ public class Main {
   public static Controller initCtrl(
       final ParticleProvider provider, final TimeSlicer slicer) {
     final Controller ctrl = new Controller(c);
-    ctrl.addControlledValue(new ControlledValue("Slice Time", c, 100.0, 2000.0) {
+    ctrl.addControlledValue(new ControlledValue("Slice Time", c, 100.0, 2000.0, 100) {
 
       @Override
       protected void setValueDirectly(final double value) {
@@ -183,7 +183,7 @@ public class Main {
       }
 
     });
-    ctrl.addControlledValue(new ControlledValue("Threshold", c, 0, 1000) {
+    ctrl.addControlledValue(new ControlledValue("Threshold", c, 0, 1000, 1000) {
 
       @Override
       protected void setValueDirectly(final double value) {
@@ -275,11 +275,15 @@ public class Main {
 
     });
     ctrl.addComponent(null, cb);
-    final JTextField info = new JTextField();
-    info.setMaximumSize(new Dimension(400, 40));
-    info.setPreferredSize(new Dimension(320, 40));
-    slicer.setInfo(info);
-    ctrl.addComponent("Current Slice", info);
+    final JTextField infoA = new JTextField();
+    infoA.setMaximumSize(new Dimension(400, 40));
+    infoA.setPreferredSize(new Dimension(320, 40));
+    final JTextField infoB = new JTextField();
+    infoB.setMaximumSize(new Dimension(400, 40));
+    infoB.setPreferredSize(new Dimension(320, 40));
+    slicer.setInfo(infoA, infoB);
+    ctrl.addComponent("Current Start", infoA);
+    ctrl.addComponent("Current End", infoB);
     return ctrl;
   }
 

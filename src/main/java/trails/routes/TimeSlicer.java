@@ -73,9 +73,9 @@ public abstract class TimeSlicer {
   }
 
   /** The start of the interval. */
-  private long intervalFrom = 12L * 60L * 60L * 1000L; // 12h
+  private long intervalFrom = 6L * 60L * 60L * 1000L; // 6h
   /** The end of the interval exclusive. */
-  private long intervalTo = 15L * 60L * 60L * 1000L; // 15h
+  private long intervalTo = 9L * 60L * 60L * 1000L; // 9h
 
   /**
    * Setter. The value has to be checked afterwards.
@@ -168,27 +168,37 @@ public abstract class TimeSlicer {
   /** This method is called when the settings change. */
   protected abstract void onChange();
 
-  /** The text info field. */
-  private JTextField info;
+  /** The first text info field. */
+  private JTextField infoA;
+  /** The second text info field. */
+  private JTextField infoB;
 
   /**
    * Setter.
    * 
-   * @param info The text info field.
+   * @param infoA The first text info field.
+   * @param infoB The second text info field.
    */
-  public void setInfo(final JTextField info) {
-    this.info = info;
+  public void setInfo(final JTextField infoA, final JTextField infoB) {
+    this.infoA = infoA;
+    this.infoB = infoB;
   }
 
   /**
    * Setter.
    * 
-   * @param text Sets the text of the text info field if any.
+   * @param textA Sets the text of the first text info field if any.
+   * @param textB Sets the text of the second text info field if any.
    */
-  public void setInfoText(final String text) {
-    Objects.requireNonNull(text);
-    if(info == null) return;
-    info.setText(text);
+  public void setInfoText(final String textA, final String textB) {
+    Objects.requireNonNull(textA);
+    Objects.requireNonNull(textB);
+    if(infoA != null) {
+      infoA.setText(textA);
+    }
+    if(infoB != null) {
+      infoB.setText(textB);
+    }
   }
 
 }

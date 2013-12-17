@@ -19,6 +19,8 @@ public abstract class ControlledValue {
   private final double maxValue;
   /** The name of the value. */
   private final String name;
+  /** The number of ticks. */
+  private final int ticks;
 
   /**
    * Creates a controlled value.
@@ -27,13 +29,15 @@ public abstract class ControlledValue {
    * @param refreshee The object that gets notified when the value changes.
    * @param minValue The minimum value.
    * @param maxValue The maximum value.
+   * @param ticks The number of ticks.
    */
   public ControlledValue(final String name, final Refreshable refreshee,
-      final double minValue, final double maxValue) {
+      final double minValue, final double maxValue, final int ticks) {
     this.name = Objects.requireNonNull(name);
     this.refreshee = Objects.requireNonNull(refreshee);
     this.minValue = minValue;
     this.maxValue = maxValue;
+    this.ticks = ticks;
   }
 
   /**
@@ -43,6 +47,15 @@ public abstract class ControlledValue {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of ticks.
+   */
+  public int getTicks() {
+    return ticks;
   }
 
   /**

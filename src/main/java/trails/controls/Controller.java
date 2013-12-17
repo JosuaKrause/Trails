@@ -31,7 +31,7 @@ public class Controller {
   public Controller(final Refreshable refreshee) {
     vrs = new ArrayList<>();
     values = new ArrayList<>();
-    values.add(new ControlledValue("Curve Bend", refreshee, 0, 1) {
+    values.add(new ControlledValue("Curve Bend", refreshee, 0, 1, 100) {
 
       @Override
       protected void setValueDirectly(final double value) {
@@ -44,7 +44,7 @@ public class Controller {
       }
 
     });
-    values.add(new ControlledValue("Particle Brightness", refreshee, 0.01, 0.3) {
+    values.add(new ControlledValue("Particle Brightness", refreshee, 0.01, 0.3, 100) {
 
       @Override
       protected void setValueDirectly(final double value) {
@@ -57,7 +57,7 @@ public class Controller {
       }
 
     });
-    values.add(new ControlledValue("Trail Length", refreshee, 0.7, 0.99) {
+    values.add(new ControlledValue("Trail Length", refreshee, 0.7, 0.99, 100) {
 
       @Override
       protected void setValueDirectly(final double value) {

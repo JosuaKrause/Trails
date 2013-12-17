@@ -29,7 +29,7 @@ public final class ControlPanel extends JPanel {
     final Component space = Box.createRigidArea(new Dimension(5, 5));
 
     for(final ControlledValue v : ctrl.values()) {
-      final double step = (v.getMaxValue() - v.getMinValue()) / 100.0;
+      final double step = (v.getMaxValue() - v.getMinValue()) / v.getTicks();
       final SpinnerNumberModel m = new SpinnerNumberModel(
           v.getValue(), v.getMinValue(), v.getMaxValue(), step);
       final JSpinner spinner = new JSpinner(m);
