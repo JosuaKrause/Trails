@@ -74,7 +74,7 @@ public class DCLoader {
    * @throws Exception General Exception.
    */
   private static void fillDatabase(final Map<String, Point2D> stations) throws Exception {
-    final SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/YYYY HH:mm");
+    final SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     final File folder = new File("src/main/resources/washington-dc/");
     final CSVReader reader = new CSVReader(',', '"', true, false, true);
     try (SQLHandler sql = new SQLHandler("dc_trips")) {
@@ -123,6 +123,9 @@ public class DCLoader {
               }
               Objects.requireNonNull(st);
               final Date time = fmt.parse(st);
+              // System.out.println(
+              // new SimpleDateFormat("yyyy-MM-dd HH:mm").format(time) + " " +
+              // st);
               final long start = time.getTime();
               final String[] duration = row.get("Duration").split(" ");
               final int hour = getFrontInt(duration[0]);
