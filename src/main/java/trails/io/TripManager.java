@@ -22,6 +22,16 @@ public interface TripManager extends AutoCloseable {
   List<Trip> read(long startIndex, long fromTime, long toTime) throws IOException;
 
   /**
+   * Counts all trips that lie in the given time span.
+   * 
+   * @param fromTime The lowest inclusive time.
+   * @param toTime The highest exclusive time.
+   * @return The number of trips.
+   * @throws IOException I/O Exception.
+   */
+  int count(long fromTime, long toTime) throws IOException;
+
+  /**
    * Getter.
    * 
    * @return The time of the very first entry.

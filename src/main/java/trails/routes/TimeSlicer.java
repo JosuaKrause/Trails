@@ -100,8 +100,12 @@ public abstract class TimeSlicer {
       }
       return;
     }
+    final boolean chg = (intervalFrom != from) || (intervalTo != to);
     intervalFrom = from;
     intervalTo = to;
+    if(chg) {
+      onChange();
+    }
   }
 
   /**
@@ -160,6 +164,9 @@ public abstract class TimeSlicer {
   protected int getNumberOfSlices(final long from, final long to) {
     return (int) ((to - from) / (intervalTo - intervalFrom)) + 1;
   }
+
+  /** This method is called when the settings change. */
+  protected abstract void onChange();
 
   /** The text info field. */
   private JTextField info;

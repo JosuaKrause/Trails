@@ -76,6 +76,23 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
   private static final boolean EASY_QUERY = true;
 
   @Override
+  public int count(final long fromTime, final long toTime) throws IOException {
+    if(!EASY_QUERY) throw new IllegalStateException("must be in easy query mode");
+    final String query = "SELECT COUNT(*) AS count FROM trips "
+        + "WHERE start_time >= " + fromTime + " AND start_time < " + toTime;
+    try {
+      final ResultSet res = query(query);
+      if(!res.next()) throw new IOException("no records");
+      final int val = res.getInt("count");
+      if(res.next()) throw new IOException("too much records");
+      res.close();
+      return val;
+    } catch(final SQLException e) {
+      throw new IOException(e);
+    }
+  }
+
+  @Override
   public List<Trip> read(final long startIndex, final long fromTime, final long toTime)
       throws IOException {
     if(EASY_QUERY) {
@@ -98,6 +115,7 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
         throw new IOException(e);
       }
     }
+    // only useful for GPS tracks
     final String where = "start_time >= " + fromTime + " AND start_time < " + toTime;
     final String start = "SELECT MIN(start_time) AS start_time, vehicle, start_lat, start_lon "
         + "FROM trips WHERE " + where + " GROUP BY vehicle";

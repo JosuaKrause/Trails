@@ -111,7 +111,7 @@ public abstract class RangeSlider extends JSlider implements ValueRefresher {
 class RangeSliderUI extends BasicSliderUI {
 
   /** Color of selected range. */
-  private final Color rangeColor = Color.GREEN;
+  private final Color rangeColor = new Color(0x012345);
 
   /** Location and size of thumb for upper value. */
   private Rectangle upperThumbRect;
@@ -323,6 +323,8 @@ class RangeSliderUI extends BasicSliderUI {
     // Do nothing.
   }
 
+  private final Color lowerFill = new Color(0x998ec3);
+
   /**
    * Paints the thumb for the lower value using the specified graphics object.
    */
@@ -342,15 +344,17 @@ class RangeSliderUI extends BasicSliderUI {
         RenderingHints.VALUE_ANTIALIAS_ON);
     g2d.translate(knobBounds.x, knobBounds.y);
 
-    g2d.setColor(Color.CYAN);
+    g2d.setColor(lowerFill);
     g2d.fill(thumbShape);
 
-    g2d.setColor(Color.BLUE);
+    g2d.setColor(Color.BLACK);
     g2d.draw(thumbShape);
 
     // Dispose graphics.
     g2d.dispose();
   }
+
+  private final Color upperFill = new Color(0xf1a340);
 
   /**
    * Paints the thumb for the upper value using the specified graphics object.
@@ -371,10 +375,10 @@ class RangeSliderUI extends BasicSliderUI {
         RenderingHints.VALUE_ANTIALIAS_ON);
     g2d.translate(knobBounds.x, knobBounds.y);
 
-    g2d.setColor(Color.PINK);
+    g2d.setColor(upperFill);
     g2d.fill(thumbShape);
 
-    g2d.setColor(Color.RED);
+    g2d.setColor(Color.BLACK);
     g2d.draw(thumbShape);
 
     // Dispose graphics.

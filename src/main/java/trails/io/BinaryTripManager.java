@@ -236,6 +236,11 @@ public class BinaryTripManager implements TripManager {
   }
 
   @Override
+  public int count(final long fromTime, final long toTime) throws IOException {
+    return read(0, fromTime, toTime).size();
+  }
+
+  @Override
   public List<Trip> read(final long startIndex, final long fromTime, final long toTime)
       throws IOException {
     if(fromTime > toTime) throw new IllegalArgumentException(fromTime + " > " + toTime);

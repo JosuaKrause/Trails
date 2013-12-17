@@ -14,7 +14,12 @@ import javax.swing.event.ChangeListener;
 import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.examples.ExampleUtil;
+import jkanvas.groups.LinearGroup;
+import jkanvas.groups.RenderGroup;
+import jkanvas.painter.BorderRenderpass;
+import jkanvas.painter.Renderpass;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.util.Resource;
 import jkanvas.util.Screenshot;
@@ -135,7 +140,12 @@ public class Main {
       }
 
     };
-    final TimeSlicer slicer = new TripSlicer(mng);
+    final RenderGroup<Renderpass> main = new LinearGroup<>(p, false, 5,
+        AnimationTiming.NO_ANIMATION);
+    main.addRenderpass(trails);
+    final BarChartRenderpass bc = new BarChartRenderpass(60, 450, 30);
+    final TimeSlicer slicer = new TripSlicer(mng, bc);
+    main.addRenderpass(new BorderRenderpass<>(bc));
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 500);
     final Controller ctrl = initCtrl(provider, slicer);
@@ -146,7 +156,7 @@ public class Main {
     frame.add(new ControlPanel(ctrl), BorderLayout.WEST);
     frame.pack();
     frame.setLocationRelativeTo(null);
-    p.addPass(trails);
+    p.addPass(main);
     c.reset();
   }
 
@@ -255,12 +265,12 @@ public class Main {
       }
 
     });
-    final JCheckBox cb = new JCheckBox("Skip empty slices", TripSlicer.SKIP_GAPS);
+    final JCheckBox cb = new JCheckBox("Skip empty slices", TripSlicer.isSkippingGaps());
     cb.addChangeListener(new ChangeListener() {
 
       @Override
       public void stateChanged(final ChangeEvent e) {
-        TripSlicer.SKIP_GAPS = cb.isSelected();
+        TripSlicer.setSkipGaps(cb.isSelected());
       }
 
     });

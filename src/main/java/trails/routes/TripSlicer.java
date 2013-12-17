@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import trails.BarChartRenderpass;
 import trails.io.Trip;
 import trails.io.TripManager;
 import trails.particels.ParticleProvider;
@@ -27,14 +28,19 @@ public class TripSlicer extends TimeSlicer {
   private long curTime;
   /** The current index. */
   private long curIndex;
+  /** The bar chart. */
+  protected final BarChartRenderpass bc;
 
   /**
    * Creates a new trip slicer.
    * 
    * @param mng The trip manager.
+   * @param bc The bar chart showing number of possible trips.
    * @throws IOException I/O Exception.
    */
-  public TripSlicer(final TripManager mng) throws IOException {
+  public TripSlicer(final TripManager mng, final BarChartRenderpass bc)
+      throws IOException {
+    this.bc = Objects.requireNonNull(bc);
     this.mng = Objects.requireNonNull(mng);
     curTime = mng.getStartTime();
     curIndex = 0L;
@@ -48,6 +54,94 @@ public class TripSlicer extends TimeSlicer {
     top = Double.isNaN(t) ? 40.862122 : t;
     System.out.println("lon: " + left + " lat: " + top +
         " lon: " + right + " lat: " + bottom);
+    onChange();
+  }
+
+  /**
+   * Fills the whole bar chart.
+   * 
+   * @throws IOException I/O Exception.
+   */
+  protected void fillBarChart() throws IOException {
+    synchronized(bc) {
+      needUpdate = false;
+      long time = previousTime(curTime);
+      for(int i = 0; i < bc.size(); ++i) {
+        final long startInterval = time + getIntervalFrom();
+        final long endInterval = time + getIntervalTo();
+        final int c = mng.count(startInterval, endInterval);
+        bc.set(i, c);
+        time = advanceTime(time);
+      }
+    }
+  }
+
+  /**
+   * Fills the last slot and advances the bar chart.
+   * 
+   * @param time The time of the second slot (the current time).
+   * @throws IOException I/O Exception.
+   */
+  private void fillLastSlot(final long time) throws IOException {
+    synchronized(bc) {
+      long t = time;
+      for(int i = 0; i < bc.size() - 1; ++i) {
+        t = advanceTime(t);
+      }
+      final long startInterval = t + getIntervalFrom();
+      final long endInterval = t + getIntervalTo();
+      final int c = mng.count(startInterval, endInterval);
+      bc.set(0, c);
+      bc.shift(1);
+    }
+  }
+
+  /** The update loop. */
+  private final Runnable updateLoop = new Runnable() {
+
+    @Override
+    public void run() {
+      while(!Thread.currentThread().isInterrupted()) {
+        if(needUpdate) {
+          try {
+            fillBarChart();
+          } catch(final IOException e) {
+            e.printStackTrace();
+          }
+        }
+        try {
+          synchronized(bc) {
+            bc.wait(100);
+          }
+        } catch(final InterruptedException e) {
+          return;
+        }
+      }
+    }
+
+  };
+
+  /** The current updating thread. */
+  private Thread updater;
+  /** Whether the bar chart needs an update. */
+  protected volatile boolean needUpdate = false;
+
+  @Override
+  protected void onChange() {
+    if(updater == null || !updater.isAlive()) {
+      synchronized(bc) {
+        if(updater != null) {
+          updater.interrupt();
+        }
+        updater = new Thread(updateLoop);
+        updater.setDaemon(true);
+        updater.start();
+      }
+    } else if(needUpdate) return;
+    synchronized(bc) {
+      needUpdate = true;
+      bc.notifyAll();
+    }
   }
 
   /** The leftmost longitude coordinate. */
@@ -82,7 +176,25 @@ public class TripSlicer extends TimeSlicer {
   }
 
   /** Whether to skip time slices with no trips. */
-  public static boolean SKIP_GAPS = true;
+  private static boolean SKIP_GAPS = true;
+
+  /**
+   * Setter.
+   * 
+   * @param skipGaps Whether to skip gaps.
+   */
+  public static final void setSkipGaps(final boolean skipGaps) {
+    SKIP_GAPS = skipGaps;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether to skip gaps.
+   */
+  public static final boolean isSkippingGaps() {
+    return SKIP_GAPS;
+  }
 
   /**
    * A trip for aggregation.
@@ -136,10 +248,12 @@ public class TripSlicer extends TimeSlicer {
   @Override
   public void timeSlice(final ParticleProvider provider, final int width, final int height) {
     if(curTime < 0) throw new IllegalStateException("no start");
+    int skipped = -1;
     final SimpleDateFormat fmt = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
     try {
       int no;
       do {
+        ++skipped;
         final long startInterval = curTime + getIntervalFrom();
         final long endInterval = curTime + getIntervalTo();
         final List<Trip> list = mng.read(curIndex, startInterval, endInterval);
@@ -167,13 +281,12 @@ public class TripSlicer extends TimeSlicer {
               agg.to, agg.slices, Math.log(num) + 1.0);
         }
         no = list.size();
-        final long end = mng.getEndTime();
-        curTime += getTimeSlice();
         if(no != 0) {
           curIndex = list.get(list.size() - 1).getIndex() + 1L;
         }
-        if(curTime > end) {
-          curTime = mng.getStartTime();
+        final long lastTime = curTime;
+        curTime = advanceTime(curTime);
+        if(curTime < lastTime) {
           curIndex = 0L;
           System.out.println("full cycle!");
         }
@@ -181,9 +294,37 @@ public class TripSlicer extends TimeSlicer {
         setInfoText(fmt.format(new Date(startInterval)) + " -> "
             + fmt.format(new Date(endInterval)));
       } while(SKIP_GAPS && no == 0);
+      if(skipped == 0) {
+        fillLastSlot(curTime);
+      } else {
+        fillBarChart();
+      }
     } catch(final IOException io) {
       throw new IllegalStateException(io);
     }
+  }
+
+  /**
+   * Advances the time.
+   * 
+   * @param time The time.
+   * @return The next time step.
+   * @throws IOException I/O Exception.
+   */
+  private long advanceTime(final long time) throws IOException {
+    final long end = mng.getEndTime();
+    final long cTime = time + getTimeSlice();
+    return (cTime > end) ? mng.getStartTime() : cTime;
+  }
+
+  /**
+   * Computes the previous time.
+   * 
+   * @param time The time.
+   * @return The previous time.
+   */
+  private long previousTime(final long time) {
+    return time - getTimeSlice();
   }
 
 }
