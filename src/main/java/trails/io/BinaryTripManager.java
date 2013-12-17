@@ -236,7 +236,8 @@ public class BinaryTripManager implements TripManager {
   }
 
   @Override
-  public int count(final long fromTime, final long toTime) throws IOException {
+  public int count(final long fromTime, final long toTime, final long vehicle)
+      throws IOException {
     return read(0, fromTime, toTime).size();
   }
 

@@ -83,7 +83,6 @@ public class DCLoader {
       for(final File f : folder.listFiles(FILTER)) {
         System.out.println("reading " + f);
         final Trip t = new Trip();
-        t.setVehicle(0);
         int count = 0;
         try (InsertStatement is = sql.beginSection()) {
           for(final CSVRow row : CSVReader.readRows(Resource.getFor(f), reader)) {
@@ -133,6 +132,18 @@ public class DCLoader {
               final int sec = getFrontInt(duration[2]);
               final long end = start + ((hour * 60L + min) * 60L + sec) * 1000L;
               t.set(num++, from.getY(), from.getX(), start, to.getY(), to.getX(), end);
+              final String v = row.get("Subscription Type");
+              switch(v) {
+                case "Subscriber":
+                  t.setVehicle(1);
+                  break;
+                case "Casual":
+                  t.setVehicle(0);
+                  break;
+                default:
+                  System.err.println("unknown vehicle: " + Objects.toString(v));
+                  throw new Exception();
+              }
               is.insert(t);
               ++count;
             } catch(final Exception e) {

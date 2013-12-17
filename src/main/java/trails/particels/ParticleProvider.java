@@ -69,7 +69,7 @@ public final class ParticleProvider {
 
     /** Creates a path particle that is not in use. */
     public PathParticle() {
-      super(Double.NaN, Double.NaN, Double.NaN);
+      super(Double.NaN, Double.NaN, Double.NaN, 0);
       inUse = false;
     }
 
@@ -81,13 +81,16 @@ public final class ParticleProvider {
      * @param end The end position.
      * @param slices How many slices the particle needs for its trip.
      * @param size The size of the particle.
+     * @param color The color. {@link Particle#RED}, {@link Particle#GREEN}, or
+     *          {@link Particle#BLUE}.
      */
     public void startPath(final double startX, final double startY,
-        final Point2D end, final int slices, final double size) {
+        final Point2D end, final int slices, final double size, final int color) {
       final PathParticle thiz = this;
       inUse = true;
       setSize(size);
       setPosition(startX, startY);
+      setColor(color);
       startAnimationTo(end, getFor(slices), new AnimationAction() {
 
         @Override
@@ -214,12 +217,14 @@ public final class ParticleProvider {
    * @param end The end position.
    * @param slices How many slices this trip takes.
    * @param size The size of the particle.
+   * @param color The color. {@link Particle#RED}, {@link Particle#GREEN}, or
+   *          {@link Particle#BLUE}.
    */
   public void startPath(final double startX, final double startY,
-      final Point2D end, final int slices, final double size) {
+      final Point2D end, final int slices, final double size, final int color) {
     Objects.requireNonNull(end);
     final PathParticle p = getUnusedParticle();
-    p.startPath(startX, startY, end, slices, size);
+    p.startPath(startX, startY, end, slices, size, color);
   }
 
 }

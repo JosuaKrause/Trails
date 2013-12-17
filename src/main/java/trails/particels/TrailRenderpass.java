@@ -153,16 +153,35 @@ public class TrailRenderpass extends Renderpass {
     return (Graphics2D) img.getGraphics();
   }
 
+  /** Red particles. */
+  private static final Color RED = new Color(1f, 0.1f, 0.1f);
+  /** Green particles. */
+  private static final Color GREEN = new Color(0.1f, 1f, 0.1f);
+  /** Blue particles. */
+  private static final Color BLUE = new Color(0.1f, 0.1f, 1f);
+
   /** Computes the next actual image. */
   protected void stepImage() {
     final Graphics2D g = getGraphics();
     fade(g, fade);
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, particleStrength));
-    g.setColor(new Color(0.1f, 0.1f, 1f));
     try (Snapshot<Particle> s = particles.getSnapshot()) {
       for(final Particle p : s) {
         if(p == null || !p.shouldDraw()) {
           continue;
+        }
+        switch(p.getColor()) {
+          case Particle.RED:
+            g.setColor(RED);
+            break;
+          case Particle.GREEN:
+            g.setColor(GREEN);
+            break;
+          case Particle.BLUE:
+            g.setColor(BLUE);
+            break;
+          default:
+            throw new IllegalArgumentException("unknown color: " + p.getColor());
         }
         g.fill(PaintUtil.createCircle(p.getX(), p.getY(), p.getSize()));
       }

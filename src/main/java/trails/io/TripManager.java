@@ -26,10 +26,11 @@ public interface TripManager extends AutoCloseable {
    * 
    * @param fromTime The lowest inclusive time.
    * @param toTime The highest exclusive time.
+   * @param vehicle The vehicle.
    * @return The number of trips.
    * @throws IOException I/O Exception.
    */
-  int count(long fromTime, long toTime) throws IOException;
+  int count(long fromTime, long toTime, long vehicle) throws IOException;
 
   /**
    * Getter.

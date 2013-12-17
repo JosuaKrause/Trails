@@ -16,7 +16,11 @@ import jkanvas.util.ArrayUtil;
 public class BarChartRenderpass extends Renderpass {
 
   /** The slots. */
-  private final double[] slots;
+  private final double[] slotsA;
+  /** The second slots. */
+  private final double[] slotsB;
+  /** The sum of both slots. */
+  private final double[] sum;
   /** The offset. */
   private int off;
   /** The width of the chart. */
@@ -34,7 +38,9 @@ public class BarChartRenderpass extends Renderpass {
   public BarChartRenderpass(final int slots, final double width, final double height) {
     this.width = width;
     this.height = height;
-    this.slots = new double[slots];
+    slotsA = new double[slots];
+    slotsB = new double[slots];
+    sum = new double[slots];
     off = 0;
   }
 
@@ -44,7 +50,7 @@ public class BarChartRenderpass extends Renderpass {
    * @return The number of slots.
    */
   public int size() {
-    return slots.length;
+    return slotsA.length;
   }
 
   /**
@@ -65,43 +71,58 @@ public class BarChartRenderpass extends Renderpass {
    */
   private int index(final int i) {
     final int t = off + i;
-    if(t > 0) return t % slots.length;
-    return (slots.length - (-t % slots.length)) % slots.length;
+    if(t > 0) return t % slotsA.length;
+    return (slotsA.length - (-t % slotsA.length)) % slotsA.length;
   }
 
   /**
    * Getter.
    * 
    * @param i The index.
+   * @param slotA Whether slotA should is returned.
    * @return The value at the given index.
    */
-  public double get(final int i) {
-    return slots[index(i)];
+  public double get(final int i, final boolean slotA) {
+    return slotA ? slotsA[index(i)] : slotsB[index(i)];
   }
 
   /**
    * Setter.
    * 
    * @param i The index.
+   * @param slotA Whether slotA should be written.
    * @param v The value at the given index.
    */
-  public void set(final int i, final double v) {
+  public void set(final int i, final boolean slotA, final double v) {
     if(v < 0) throw new IllegalArgumentException("" + v);
-    slots[index(i)] = v;
+    final int index = index(i);
+    if(slotA) {
+      slotsA[index] = v;
+    } else {
+      slotsB[index] = v;
+    }
+    sum[index] = slotsA[index] + slotsB[index];
   }
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
-    final double slotHeight = ArrayUtil.max(slots);
+    final double slotHeight = ArrayUtil.max(sum);
     if(slotHeight == 0) return;
-    final int sCount = slots.length;
+    final int sCount = slotsA.length;
     final double slotWidth = sCount;
     final Rectangle2D rect = new Rectangle2D.Double();
     double x = 0.0;
     for(int b = 0; b < sCount; ++b) {
       final double w = width / slotWidth;
-      final double h = get(b) * height / slotHeight;
-      rect.setFrame(x, height - h, w, h);
+      final double hA = get(b, true) * height / slotHeight;
+      final double hB = get(b, false) * height / slotHeight;
+      final double h = hA + hB;
+      rect.setFrame(x, height - h, w, hA);
+      g.setColor(b == 0 ? new Color(0x990000) : new Color(0xfc8d59));
+      g.fill(rect);
+      g.setColor(Color.BLACK);
+      g.draw(rect);
+      rect.setFrame(x, height - hB, w, hB);
       g.setColor(b == 0 ? new Color(0x034e7b) : new Color(0x2b8cbe));
       g.fill(rect);
       g.setColor(Color.BLACK);

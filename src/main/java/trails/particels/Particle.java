@@ -14,11 +14,20 @@ import jkanvas.animation.GenericAnimated;
  */
 public class Particle extends AnimatedPosition implements Revokable {
 
+  /** The color red. */
+  public static final int RED = 0;
+  /** The color green. */
+  public static final int GREEN = 1;
+  /** The color blue. */
+  public static final int BLUE = 2;
+
   /** The curve bend ratio. */
   public static double bendRatio = 0.4;
 
   /** The particle size. */
   private double size;
+  /** The color. */
+  private int color;
 
   /**
    * Creates a particle at the given position.
@@ -26,10 +35,33 @@ public class Particle extends AnimatedPosition implements Revokable {
    * @param x The x coordinate.
    * @param y The y coordinate.
    * @param size The size.
+   * @param color The color. {@link Particle#RED}, {@link Particle#GREEN}, or
+   *          {@link Particle#BLUE}.
    */
-  public Particle(final double x, final double y, final double size) {
+  public Particle(final double x, final double y, final double size, final int color) {
     super(x, y);
     this.size = size;
+    this.color = color;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param color The color. {@link Particle#RED}, {@link Particle#GREEN}, or
+   *          {@link Particle#BLUE}.
+   */
+  public void setColor(final int color) {
+    this.color = color;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The color. {@link Particle#RED}, {@link Particle#GREEN}, or
+   *         {@link Particle#BLUE}.
+   */
+  public int getColor() {
+    return color;
   }
 
   /**

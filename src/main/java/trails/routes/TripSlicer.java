@@ -13,6 +13,7 @@ import java.util.Objects;
 import trails.BarChartRenderpass;
 import trails.io.Trip;
 import trails.io.TripManager;
+import trails.particels.Particle;
 import trails.particels.ParticleProvider;
 
 /**
@@ -69,8 +70,12 @@ public class TripSlicer extends TimeSlicer {
       for(int i = 0; i < bc.size(); ++i) {
         final long startInterval = time + getIntervalFrom();
         final long endInterval = time + getIntervalTo();
-        final int c = mng.count(startInterval, endInterval);
-        bc.set(i, c);
+        // red
+        final int cA = mng.count(startInterval, endInterval, 0);
+        bc.set(i, true, cA);
+        // blue
+        final int cB = mng.count(startInterval, endInterval, 1);
+        bc.set(i, false, cB);
         time = advanceTime(time);
       }
     }
@@ -90,8 +95,12 @@ public class TripSlicer extends TimeSlicer {
       }
       final long startInterval = t + getIntervalFrom();
       final long endInterval = t + getIntervalTo();
-      final int c = mng.count(startInterval, endInterval);
-      bc.set(0, c);
+      // red
+      final int cA = mng.count(startInterval, endInterval, 0);
+      bc.set(0, true, cA);
+      // blue
+      final int cB = mng.count(startInterval, endInterval, 1);
+      bc.set(0, false, cB);
       bc.shift(1);
     }
   }
@@ -209,6 +218,8 @@ public class TripSlicer extends TimeSlicer {
     public final Point2D to;
     /** The duration in slices. */
     public final int slices;
+    /** Vehicle. */
+    public final long vehicle;
 
     /**
      * Creates a trip for aggregation.
@@ -216,10 +227,13 @@ public class TripSlicer extends TimeSlicer {
      * @param from The start position.
      * @param to The end position.
      * @param slices The duration in slices.
+     * @param vehicle The vehicle.
      */
-    public Aggregated(final Point2D from, final Point2D to, final int slices) {
+    public Aggregated(final Point2D from, final Point2D to,
+        final int slices, final long vehicle) {
       this.from = Objects.requireNonNull(from);
       this.to = Objects.requireNonNull(to);
+      this.vehicle = vehicle;
       this.slices = slices;
     }
 
@@ -230,6 +244,7 @@ public class TripSlicer extends TimeSlicer {
       result = prime * result + from.hashCode();
       result = prime * result + slices;
       result = prime * result + to.hashCode();
+      result = prime * result + ((Long) vehicle).hashCode();
       return result;
     }
 
@@ -240,6 +255,7 @@ public class TripSlicer extends TimeSlicer {
       final Aggregated other = (Aggregated) obj;
       if(!from.equals(other.from)) return false;
       if(!to.equals(other.to)) return false;
+      if(vehicle != other.vehicle) return false;
       return slices == other.slices;
     }
 
@@ -264,7 +280,7 @@ public class TripSlicer extends TimeSlicer {
               getY(t.getPickupLat(), height));
           final Point2D to = new Point2D.Double(getX(t.getDropoffLon(), width),
               getY(t.getDropoffLat(), height));
-          final Aggregated agg = new Aggregated(from, to, slices);
+          final Aggregated agg = new Aggregated(from, to, slices, t.getVehicle());
           Integer num = journeys.get(agg);
           if(num == null) {
             num = 0;
@@ -277,8 +293,9 @@ public class TripSlicer extends TimeSlicer {
           if(num < getThreshold()) {
             continue;
           }
+          final int col = agg.vehicle == 0 ? Particle.RED : Particle.BLUE;
           provider.startPath(agg.from.getX(), agg.from.getY(),
-              agg.to, agg.slices, Math.log(num) + 1.0);
+              agg.to, agg.slices, Math.log(num) + 1.0, col);
         }
         no = list.size();
         if(no != 0) {

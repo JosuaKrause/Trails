@@ -76,10 +76,12 @@ public class SQLHandler implements TripManager, TripAcceptor<InsertStatement> {
   private static final boolean EASY_QUERY = true;
 
   @Override
-  public int count(final long fromTime, final long toTime) throws IOException {
+  public int count(final long fromTime, final long toTime, final long vehicle)
+      throws IOException {
     if(!EASY_QUERY) throw new IllegalStateException("must be in easy query mode");
     final String query = "SELECT COUNT(*) AS count FROM trips "
-        + "WHERE start_time >= " + fromTime + " AND start_time < " + toTime;
+        + "WHERE start_time >= " + fromTime + " AND start_time < " + toTime
+        + " AND vehicle = " + vehicle;
     try {
       final ResultSet res = query(query);
       if(!res.next()) throw new IOException("no records");
