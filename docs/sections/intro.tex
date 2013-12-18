@@ -1,0 +1,30 @@
+Analyzing movement patterns of people is a task that just recently became
+feasible. With the help of GPS trackers the daily routine of people can
+be analyzed \cite{geo1, geo2, geo3}, although the number of participants
+is limited. A larger number of trips can for example be acquired
+by installing GPS trackers in taxi cabs \cite{Ferreira2013, Guo2012}.
+With the inception of bike sharing programs in various cities large
+amounts of journey data from people daily utilizing bicycles have
+been automatically created.
+
+For companies providing shared bicycles it is interesting to see who
+uses the bikes, when are they used, and which routes have been taken.
+For maintenance reasons it is also important to know whether the usage
+of the bikes are balanced between stations or whether there are some
+stations that are used more often as start or destination.
+Tourists or one time users may produce such imbalances, so it
+would be beneficial to detect whether casual users follow any patterns.
+Since bike sharing is popular among commuters, using it daily to get
+to work, it is interesting to see how the usage patterns change during
+the rush-hour. This information can be used to create infrastructure
+to make commuting by bike easier.
+
+In this paper we introduce a tool for analyzing temporal
+origin-destination data and use it on data provided by
+the bicycle sharing program
+of Washington, DC: Capital Bikeshare \cite{wash}.
+We will first present various approaches that have been used
+to visualize origin-destination data (see Section~\ref{sec:rel}).
+Then we will show the data set (Section~\ref{sec:data}) and
+the implementation of the tool (Section~\ref{sec:impl}).
+After that we present results (Section~\ref{sec:result}).

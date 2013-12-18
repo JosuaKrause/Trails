@@ -89,7 +89,7 @@
 %% Keywords that describe your work. Will show as 'Index Terms' in journal
 %% please capitalize first letter and insert punctuation after last keyword
 \keywords{
-% TODO
+Origin-destination data, bike share, flows
 }
 
 %% ACM Computing Classification System (CCS). 
@@ -105,9 +105,11 @@
 %% Uncomment below to include a teaser figure.
   \teaser{
   % TODO
- % \centering
-%  \includegraphics[width=16cm]{CypressView}
- % \caption{In the Clouds: Vancouver from Cypress Mountain.}
+ \centering
+\includegraphics[width=3cm]{images/full_month_small.png}
+\hspace*{0.5cm}
+\includegraphics[width=3cm]{images/thresh_month_small.png}
+\caption{One month worth of bike share users with and without thresholding aggregated journeys. Blue dots are subscribed bike share users and red dots are casual users.}
   }
 
 %% Uncomment below to disable the manuscript note
@@ -132,8 +134,11 @@
 \maketitle
 
 %% \section{Introduction} %for journal use above \firstsection{..} instead
-
+\input{sections/intro.tex}
 \input{sections/relwork.tex}
+\input{sections/data.tex}
+\input{sections/impl.tex}
+\input{sections/results.tex}
 
 %% if specified like this the section will be committed in review mode
 %\acknowledgments{}
