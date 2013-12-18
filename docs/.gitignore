@@ -4,3 +4,6 @@
 /*.blg
 /*.bbl
 /*.aux
+/*.fls
+/*.out
+/main.pdf
