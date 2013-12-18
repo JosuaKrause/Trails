@@ -52,7 +52,9 @@ public class Main {
   /** Whether to use the SQL trips. */
   public static final int TRIPS_SOURCE = DC_SOURCE;
   /** The video mode. */
-  public static final boolean VIDEO_MODE = false;
+  public static final boolean VIDEO_MODE = true;
+  /** The start time offset. */
+  public static final long INIT_TIME = (9L * 31L + 1L) * 24L * 60L * 60L * 1000L;
   /** The trail render pass. */
   protected static TrailRenderpass trails;
   /** The current time. */
@@ -65,6 +67,8 @@ public class Main {
   protected static Canvas c;
   /** The help. */
   private static SimpleTextHUD help;
+  /** Frame counter. */
+  private static long numberOfFrames = 0;
 
   /** Makes a screenshot. */
   public static void makeScreenshot() {
@@ -77,8 +81,9 @@ public class Main {
       Screenshot.SCALE = 1;
       makeScreenshot = true;
       System.out.println("started screenshot");
-      final File saved = Screenshot.savePNG(new File("pics/"),
-          "frame" + time, frame.getRootPane());
+      final File saved = Screenshot.savePNG(new File("pics/"), "frame",
+          Screenshot.padNumber(numberOfFrames, 8) + ".png", frame.getRootPane());
+      ++numberOfFrames;
       System.out.println("saved " + saved);
     } catch(final IOException e) {
       e.printStackTrace();
@@ -144,7 +149,7 @@ public class Main {
         AnimationTiming.NO_ANIMATION);
     main.addRenderpass(trails);
     final BarChartRenderpass bc = new BarChartRenderpass(60, 450, 30);
-    final TimeSlicer slicer = new TripSlicer(mng, bc);
+    final TimeSlicer slicer = new TripSlicer(mng, bc, INIT_TIME);
     main.addRenderpass(new BorderRenderpass<>(bc));
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 500);

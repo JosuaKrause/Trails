@@ -37,13 +37,15 @@ public class TripSlicer extends TimeSlicer {
    * 
    * @param mng The trip manager.
    * @param bc The bar chart showing number of possible trips.
+   * @param initTime The initial start time offset.
    * @throws IOException I/O Exception.
    */
-  public TripSlicer(final TripManager mng, final BarChartRenderpass bc)
+  public TripSlicer(final TripManager mng,
+      final BarChartRenderpass bc, final long initTime)
       throws IOException {
     this.bc = Objects.requireNonNull(bc);
     this.mng = Objects.requireNonNull(mng);
-    curTime = mng.getStartTime();
+    curTime = mng.getStartTime() + initTime;
     curIndex = 0L;
     final double l = mng.getMinLon();
     left = Double.isNaN(l) ? -74.099464 : l;
