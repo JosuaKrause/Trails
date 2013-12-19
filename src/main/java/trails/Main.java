@@ -52,7 +52,7 @@ public class Main {
   /** Whether to use the SQL trips. */
   public static final int TRIPS_SOURCE = DC_SOURCE;
   /** The video mode. */
-  public static final boolean VIDEO_MODE = true;
+  public static final boolean VIDEO_MODE = false;
   /** The start time offset. */
   public static final long INIT_TIME = (9L * 31L + 1L) * 24L * 60L * 60L * 1000L;
   /** The trail render pass. */
