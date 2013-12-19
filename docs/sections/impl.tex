@@ -14,6 +14,27 @@ At the beginning of each time slice we create dots for trips of the
 relevant window and start moving them. If a trip lasts longer than the
 relevant window we let it continue to move during the next slice.
 
+\begin{figure*}
+\centering
+\includegraphics[width=3cm]{images/rush_7_tue.png}
+\hspace*{0.5cm}
+\includegraphics[width=3cm]{images/day_7_fri.png}
+\hspace*{0.5cm}
+\includegraphics[width=3cm]{images/day_7_sun.png}
+\hspace*{0.5cm}
+\includegraphics[width=3cm]{images/full_10_sun.png}
+\hspace*{0.5cm}
+\includegraphics[width=3cm]{images/full_10_wed.png}
+\caption{Different time slices. The leftmost image shows
+bike usage during the morning rush hour, the second shows
+bike usage during the day on a week day. The third image
+shows bike usage during the day on a Sunday.
+The last two images show the bike usage of two complete
+days (relevant window is 24 hours), the first being a Sunday
+and the second being a weekday. All images are during the summer months.}
+\label{fig:smallm}
+\end{figure*}
+
 To make the vast number of simultaneous trips for longer slices
 easier to read we aggregate similar trips based on origin, destination,
 duration, and type. The aggregated trips are then represented as larger

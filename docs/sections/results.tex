@@ -1,30 +1,23 @@
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{images/barchart.png}
+\caption{The bar chart view showing the number of trips per relevant
+window.
+In this bar chart the slice length is one day, the relevant window is
+during the morning rush hour.
+Weekends can be easily identified by a decreasing number of trips
+which sometimes start already on fridays.
+The current (leftmost) slice is a Saturday.}
+\label{fig:bar}
+\end{figure}
+
 \section{Results}
 \label{sec:result}
 By comparing trips during the morning rush-hour (time window from
 6am to 9am) to trips during the day until the start of
 the evening rush-hour (9am to 5pm) one can easily see
 how different user groups use the bike sharing program.
-
-\begin{figure*}
-\centering
-\includegraphics[width=3cm]{images/rush_7_tue.png}
-\hspace*{0.5cm}
-\includegraphics[width=3cm]{images/day_7_fri.png}
-\hspace*{0.5cm}
-\includegraphics[width=3cm]{images/day_7_sun.png}
-\hspace*{0.5cm}
-\includegraphics[width=3cm]{images/full_10_sun.png}
-\hspace*{0.5cm}
-\includegraphics[width=3cm]{images/full_10_wed.png}
-\caption{Different time slices. The leftmost image shows
-bike usage during the morning rush hour, the second shows
-bike usage during the day on a week day. The third image
-shows bike usage during the day on a Sunday.
-The last two images show the bike usage of two complete
-days (relevant window is 24 hours), the first being a Sunday
-and the second being a weekday. All images are during the summer months.}
-\label{fig:smallm}
-\end{figure*}
+See Figure~\ref{fig:smallm} for some snapshots.
 
 The daily commuters during the rush hour have usually longer
 journeys than users during the day. The commuters create
@@ -43,7 +36,8 @@ the relatively small number) imbalance of bicycles in the touristy
 area.
 
 Comparing weekdays to weekends shows that during the weekend
-the total number of trips far less than during the week.
+the total number of trips far less than during the week (This can also
+easily be seen by looking at the bar chart representation. See Figure~\ref{fig:bar}).
 Also the ratio of casual users is much higher.
 This is likely due to day tourists visiting over the weekend
 and the working commuters staying at home on the weekend.
@@ -52,19 +46,6 @@ as trips during the mid day on the week.
 This may come from
 people that normally do not use the bike share but use it on
 weekends to get to the city.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\linewidth]{images/barchart.png}
-\caption{The bar chart view showing the number of trips per relevant
-window.
-In this bar chart the slice length is one day, the relevant window is
-during the morning rush hour.
-Weekends can be easily identified by a decreasing number of trips
-which sometimes start already on fridays.
-The current (leftmost) slice is a Saturday.}
-\label{fig:bar}
-\end{figure}
 
 \section{Future Work}
 The tool can be expanded to show multiple views of different
