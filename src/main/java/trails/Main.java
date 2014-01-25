@@ -81,7 +81,7 @@ public class Main {
       Screenshot.SCALE = 1;
       makeScreenshot = true;
       System.out.println("started screenshot");
-      final File saved = Screenshot.savePNG(new File("pics/"), "frame",
+      final File saved = Screenshot.save(new File("pics/"), "frame",
           Screenshot.padNumber(numberOfFrames, 8) + ".png", frame.getRootPane());
       ++numberOfFrames;
       System.out.println("saved " + saved);
