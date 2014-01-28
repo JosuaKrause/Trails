@@ -1,7 +1,7 @@
 Trails
 ======
 
-See [the paper] (paper.pdf) for a short description of the project.
+See [the handout] (handout.pdf) for a short description of the project.
 
 In order to set up the project you need a `MySQL` database
 accessible via `localhost` on port `8889`. The user-name and
