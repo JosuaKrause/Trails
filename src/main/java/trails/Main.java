@@ -12,10 +12,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import jkanvas.Canvas;
+import jkanvas.CanvasSetup;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.examples.ExampleUtil;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.groups.LinearGroup;
@@ -154,7 +154,7 @@ public class Main {
     System.out.println("time slicer initialized");
     final ParticleProvider provider = new ParticleProvider(p, trails, slicer, 500);
     final Controller ctrl = initCtrl(provider, slicer);
-    help = ExampleUtil.setupCanvas(frame, c, p, true, true, true, true);
+    help = CanvasSetup.setupCanvas(frame, c, p, true, true, true, true);
     frame.setLayout(new BorderLayout());
     frame.remove(c);
     frame.add(c, BorderLayout.CENTER);
