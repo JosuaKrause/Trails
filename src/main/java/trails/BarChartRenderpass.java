@@ -3,6 +3,7 @@ package trails;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.KanvasContext;
 import jkanvas.painter.Renderpass;
@@ -132,7 +133,7 @@ public class BarChartRenderpass extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     bbox.setFrame(0, 0, width, height);
   }
 

@@ -3,7 +3,7 @@ package trails.particels;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -219,7 +219,7 @@ public class TrailRenderpass extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     bbox.setFrame(0, 0, getWidth(), getHeight());
   }
 
