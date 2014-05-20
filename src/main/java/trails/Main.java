@@ -38,7 +38,7 @@ import trails.routes.TripSlicer;
 
 /**
  * Starts the main project.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Main {
@@ -49,8 +49,10 @@ public class Main {
   public static final int GPS_SOURCE = 1;
   /** The DC source. */
   public static final int DC_SOURCE = 2;
+  /** The NY source. */
+  public static final int NY_SOURCE = 3;
   /** Whether to use the SQL trips. */
-  public static final int TRIPS_SOURCE = DC_SOURCE;
+  public static final int TRIPS_SOURCE = NY_SOURCE;
   /** The video mode. */
   public static final boolean VIDEO_MODE = false;
   /** The start time offset. */
@@ -96,7 +98,7 @@ public class Main {
 
   /**
    * Starts the main application.
-   * 
+   *
    * @param args No arguments.
    * @throws Exception Exception.
    */
@@ -124,6 +126,9 @@ public class Main {
         break;
       case DC_SOURCE:
         mng = new SQLHandler("dc_trips");
+        break;
+      case NY_SOURCE:
+        mng = new SQLHandler("ny_trips");
         break;
       case BIN_SOURCE:
         mng = new BinaryTripManager(Resource.getFor("trip_data_1.dat"));
@@ -167,7 +172,7 @@ public class Main {
 
   /**
    * Initializes the controller.
-   * 
+   *
    * @param provider The particle provider.
    * @param slicer The time slicer.
    * @return The controller.
